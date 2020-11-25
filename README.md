@@ -12,29 +12,23 @@ OR
 yarn add sign-and-verify-core
 ```
 
-Create an issuer - there are two ways to create an issuer, both need an unlocked DID document (like this one: [unlockedDID](data/unlocked-did:web:digitalcredentials.github.io.json)) with which to sign:
-
-```
-getDefaultIssuer()          // assumes you've set the DID in an environment variable called UNLOCKED_DID, as a base64 encoded DID json blob
-createIssuer(unlockedDidDocument)   // pass the DID directly as an object
-```
-
 and then use that issuer...
 
 ## Examples
 
-You can see a lot of this in [tests](src/issuer.spec.ts) - we just reproduce it here to make it easier to understand if you are new to javascript, or to testing, or really just want to see the important parts without distractions. 
+You can see a lot of this in [tests](src/issuer.spec.ts) - we just reproduce/re-organize it here to make it easier to understand if you are new to javascript, or to testing, or really just want to see the important parts without distractions. 
 
 NOTE:  where we say 'presentation', we mean a [Verifiable Presentation](https://www.w3.org/TR/vc-data-model/#presentations)
 
 NOTE:  where we say 'credential', we mean a [Verifiable Credential](https://www.w3.org/TR/vc-data-model/#credentials)
 
-```
-import createIssuer from sign-and-verify-core;
+You'll need an unlocked DID document (like this one: [unlockedDID](data/unlocked-did:web:digitalcredentials.github.io.json)) with which to sign.
 
- 
-// Load your unlocked DID from wherever you like.  For example, from the file system (if say you copied the 
-// [unlockedDID](data/unlocked-did:web:digitalcredentials.github.io.json) from this repo to your project):
+```
+import {createIssuer} from sign-and-verify-core;
+
+// Load your unlocked DID from wherever you like.  For example, from the file system (if say you copied 
+// data/unlocked-did:web:digitalcredentials.github.io.json from this repo to your project):
 
 const unlockedDidDocument = JSON.parse(readFileSync("data/unlocked-did:web:digitalcredentials.github.io.json").toString("ascii"));
 

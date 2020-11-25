@@ -1,5 +1,5 @@
 {
-  "name": "@jchartrand/sign-and-verify-base",
+  "name": "@digitalcredentials/sign-and-verify-base",
   "version": "0.0.1",
   "description": "Basic demo of signing functionality using vc-js and lds-jws2020",
   "main": "dist/cjs/index.js",
@@ -14,7 +14,7 @@
   "keywords": [],
   "author": "Kim Hamilton Duffy",
   "license": "MIT",
-  "repository": "git@github.com:jchartrand/sign-and-verify-base.git",
+  "repository": "git@github.com:digitalcredentials/sign-and-verify-base.git",
   "dependencies": {
     "@transmute/json-web-key-2020": "^1.1.0",
     "@transmute/json-web-signature-2020": "^1.1.0",

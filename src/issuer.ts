@@ -175,14 +175,3 @@ export function createIssuer(unlockedDID: DIDDocument) {
     requestDemoCredential
   }
 }
-
-
-export function getDefaultIssuer() {
-  if (!process.env.UNLOCKED_DID) {
-    throw new ConfigurationError("Environment variable 'UNLOCKED_DID' is not set");
-  }
-  const unlockedDID = JSON.parse(
-    Buffer.from(process.env.UNLOCKED_DID, "base64").toString("ascii")
-  )
-  return createIssuer(unlockedDID)
-}
