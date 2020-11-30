@@ -6,6 +6,7 @@ import { ConfigurationError } from "./errors";
 import { SignatureOptions, getSigningKeyIdentifier, getSigningDate, getProofProperty } from "./signatures";
 import { default as demoCredential } from "./demoCredential.json";
 import { v4 as uuidv4 } from 'uuid';
+import { isNode} from 'browser-or-node';
 
 const VerificationMethod = 'verificationMethod';
 const Challenge = 'challenge';
@@ -44,7 +45,8 @@ export function createIssuer(unlockedDID: DIDDocument) {
         documentUrl: url // this is the actual contxt URL after redirects
       };
     }
-    return jsonld.documentLoaders.node()(url);
+    const docLoader = isNode?jsonld.documentLoaders.node():jsonld.documentLoaders.xhr()
+    return docLoader(url);
   };
 
   function createJwk(assertionMethod: string) {
