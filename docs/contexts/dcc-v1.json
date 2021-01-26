@@ -1,0 +1,29 @@
+{
+  "@context": {
+    "@version": 1.1,
+    "@protected": true,
+    "id": "@id",
+    "type": "@type",
+    "schema": "http://schema.org/",
+    "obi": "https://w3id.org/openbadges#",
+
+    "EducationalOccupationalCredential": "schema:EducationalOccupationalCredential",
+    "EducationalOccupationalProgram": "schema:EducationalOccupationalProgram",
+    "Person": "schema:Person",
+    "name": "schema:name",
+    "url": "schema:url",
+    "identifier": "schema:identifier",
+    "numberOfCredits": "schema:numberOfCredits",
+    "startDate": "schema:startDate",
+    "endDate": "schema:endDate",
+    "educationalCredentialAwarded": "schema:educationalCredentialAwarded",
+
+    "description": { "@id": "schema:description" },
+    "image": { "@id": "schema:image", "@type": "@id" },
+
+    "awardedOnCompletionOf": { "@reverse": "schema:educationalCredentialAwarded" },
+
+    "hasCredential": "schema:hasCredential",
+    "Issuer": "obi:Issuer"
+  }
+}
