@@ -1,6 +1,6 @@
 {
   "name": "@digitalcredentials/sign-and-verify-core",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Basic demo of signing functionality using vc-js and lds-jws2020",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
