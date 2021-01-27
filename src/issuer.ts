@@ -2,14 +2,21 @@ import jsonld from "jsonld";
 import { JsonWebKey, JsonWebSignature } from "@transmute/json-web-signature-2020";
 import vc from "vc-js";
 import { PublicKey, DIDDocument } from "./types"
-import { ConfigurationError } from "./errors";
 import { SignatureOptions, getSigningKeyIdentifier, getSigningDate, getProofProperty } from "./signatures";
 import { default as demoCredential } from "./demoCredential.json";
 import { v4 as uuidv4 } from 'uuid';
-import { isNode} from 'browser-or-node';
 
-const VerificationMethod = 'verificationMethod';
-const Challenge = 'challenge';
+import { contexts, documentLoaderFactory } from '@transmute/jsonld-document-loader';
+import DccContextV1 from "./contexts/dcc-v1.json";
+import LdsJws2020ContextV1 from "./contexts/lds-jws2020-v1.json";
+
+const DccContextV1Url = "https://w3id.org/dcc/v1";
+const LdsJws2020ContextV1Url = "https://w3c-ccg.github.io/lds-jws2020/contexts/lds-jws2020-v1.json";
+const CredentialExamplesV1Url = "https://www.w3.org/2018/credentials/examples/v1";
+
+
+const VerificationMethod = "verificationMethod";
+const Challenge = "challenge";
 
 export function getController(fullDid: string) {
   return fullDid.split('#')[0];
@@ -17,37 +24,28 @@ export function getController(fullDid: string) {
 
 export function createIssuer(unlockedDID: DIDDocument) {
 
+  const customLoader = documentLoaderFactory.pluginFactory
+    .build({
+      contexts: {
+        ...contexts.W3C_Verifiable_Credentials,
+        ...contexts.W3ID_Security_Vocabulary,
+        ...contexts.W3C_Decentralized_Identifiers
+      },
+    })
+    .addContext({ [LdsJws2020ContextV1Url]: LdsJws2020ContextV1 })
+    .addContext({ [DccContextV1Url]: DccContextV1 })
+    .addResolver({
+      [unlockedDID.id]: {
+        resolve: async (_did: string) => {
+          return unlockedDID;
+        },
+      },
+    })
+    .buildDocumentLoader();
+
   const unlockedAssertionMethods = new Map<string, PublicKey>([
     [unlockedDID.publicKey[0].id, unlockedDID.publicKey[0]]
   ]);
-
-  // preload DIDs for docLoader
-  // TODO: split between issuer and verifier, which doesn't need private
-  const preloadedDocs: { [key: string]: any; } = {};
-  preloadedDocs[unlockedDID.id] = unlockedDID;
-  unlockedDID.publicKey.forEach((pk: { id: string | number; }) => {
-    preloadedDocs[pk.id] = unlockedDID;
-  })
-
-  // A documentLoader loads jsonld documents from a url.
-  // In our case we've already got the relevant document in this case (the unlocked DID) in
-  // the local filesystem, and we've
-  // loaded it into the unlockedID variable.
-  // So, we pass this customLoader to the signing/verifying methods to override normal network calls,
-  // and just return the unlockedDID
-  // NOTE:  this unlockedDID contains the public AND private keys
-  const customLoader = (url: string) => {
-    const doc = preloadedDocs[url];
-    if (doc) {
-      return {
-        contextUrl: null, // this is for a context via a link header
-        document: doc, // this is the actual document that was loaded
-        documentUrl: url // this is the actual contxt URL after redirects
-      };
-    }
-    const docLoader = isNode?jsonld.documentLoaders.node():jsonld.documentLoaders.xhr()
-    return docLoader(url);
-  };
 
   function createJwk(assertionMethod: string) {
     const keyInfo: any = unlockedAssertionMethods.get(assertionMethod);
@@ -113,8 +111,8 @@ export function createIssuer(unlockedDID: DIDDocument) {
       id: presentationId,
       holder: holder
     });
-    presentation['@context'].push("https://www.w3.org/2018/credentials/examples/v1");
-    presentation['@context'].push("https://w3c-ccg.github.io/lds-jws2020/contexts/lds-jws2020-v1.json");
+    presentation["@context"].push(CredentialExamplesV1Url);
+    presentation["@context"].push(LdsJws2020ContextV1Url);
 
     let result = await vc.signPresentation({
       presentation: presentation,
@@ -136,8 +134,6 @@ export function createIssuer(unlockedDID: DIDDocument) {
     });
     return valid;
   }
-
-
 
   async function requestDemoCredential(verifiablePresentation: any, skipVerification = false) {
 
