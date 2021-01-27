@@ -3,7 +3,7 @@
     /* https://aka.ms/tsconfig.json to read more about this file */
     "paths": {                                /* 'shortcuts' for import statements, relative to baseUrl */
       "jsonld": ["./types/jsonld"],
-      "vc-js": ["./types/vc-js"] 
+      "vc-js": ["./types/vc-js"]
     },
     "baseUrl": ".",                           /* Need to set the baseURL when using 'paths' */
     "target": "ES2015",                       /* ECMAScript target version */
@@ -16,9 +16,10 @@
     "skipLibCheck": true,                     /* Skip type checking of declaration files. */
     "forceConsistentCasingInFileNames": true,  /* Disallow inconsistently-cased references to the same file. */
     "resolveJsonModule": true,
-    "declaration": true                       /* emit type declaration files */
+    "declaration": true,                       /* emit type declaration files */
+    "rootDir": "./src"
+    
   },
-  "include": ["./src"],
-  "exclude": ["./node_modules", "src/**/*.spec.ts"]
+  "include": ["src"]
   
 }
