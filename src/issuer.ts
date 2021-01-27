@@ -32,8 +32,8 @@ export function createIssuer(unlockedDID: DIDDocument) {
         ...contexts.W3C_Decentralized_Identifiers
       },
     })
-    .addContext({[LdsJws2020ContextV1Url]: LdsJws2020ContextV1})
-    .addContext({[DccContextV1Url]: DccContextV1})
+    .addContext({ [LdsJws2020ContextV1Url]: LdsJws2020ContextV1 })
+    .addContext({ [DccContextV1Url]: DccContextV1 })
     .addResolver({
       [unlockedDID.id]: {
         resolve: async (_did: string) => {

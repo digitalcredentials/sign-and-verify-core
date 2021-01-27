@@ -16,6 +16,7 @@
     "numberOfCredits": "schema:numberOfCredits",
     "startDate": "schema:startDate",
     "endDate": "schema:endDate",
+    "value": "schema:value",
     "educationalCredentialAwarded": "schema:educationalCredentialAwarded",
 
     "description": { "@id": "schema:description" },

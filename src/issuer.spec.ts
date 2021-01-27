@@ -9,7 +9,7 @@ const identifer = 'did:web:digitalcredentials.github.io#96K4BSIWAkhcclKssb8yTWMQ
 const controller = 'did:web:digitalcredentials.github.io';
 const challenge = '123';
 const presentationId = '456'
-const credential = {
+const simpleCredential = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
@@ -30,6 +30,47 @@ const credential = {
     }
   }
 };
+
+const dccCredential =
+{
+  '@context': [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1",
+    "https://w3c-ccg.github.io/lds-jws2020/contexts/lds-jws2020-v1.json",
+    "https://w3id.org/dcc/v1"
+  ],
+  'id': 'https://digitalcredentials.github.io/samples/certificate/1fe91f0f-4c64-48c8-bfc8-7132f75776fe/',
+  'type': ['VerifiableCredential'],
+  'issuer': {
+    'type': 'Issuer',
+    'id': 'did:web:digitalcredentials.github.io',
+    'name': 'Sample Issuer',
+    'url': 'https://digitalcredentials.github.io/samples/'
+  },
+  'issuanceDate': '2021-01-19T18:22:34.772810+00:00',
+  'credentialSubject': {
+    'type': 'schema:Person',
+    'id': 'did:example:456',
+    'name': 'Percy',
+
+    'hasCredential': {
+      'type': 'schema:EducationalOccupationalCredential',
+      'name': 'DCC Sample Credential Completion',
+      'description': '<p>Learn stuff about requesting a DCC credential.</p>',
+
+      'awardedOnCompletionOf': {
+        'type': 'schema:EducationalOccupationalProgram',
+        'identifier': 'program-v1:Sample',
+        'name': 'Successful completion of sample request program',
+        'description': '<p>Learn stuff about DCC credential issuance</p>',
+        'numberOfCredits': { 'value': '1' },
+        'startDate': '',
+        'endDate': ''
+      }
+    }
+  }
+}
+
 
 const verifiablePresentation = {
   "@context": [
@@ -73,8 +114,16 @@ describe('Issuer test',
       const options = {
         'verificationMethod': identifer
       };
-      const result = await issuer.sign(credential, options);
+      const result = await issuer.sign(simpleCredential, options);
       expect(result.issuer).to.equal(controller);
+    }).slow(5000).timeout(10000);
+
+    it('should sign with DCC context', async () => {
+      const options = {
+        'verificationMethod': identifer
+      };
+      const result = await issuer.sign(dccCredential, options);
+      expect(result.issuer.id).to.equal(controller);
     }).slow(5000).timeout(10000);
 
     it('should verify', async () => {
@@ -82,7 +131,17 @@ describe('Issuer test',
         'verificationMethod': identifer
       };
 
-      const temp = await issuer.sign(credential, options);
+      const temp = await issuer.sign(simpleCredential, options);
+      const verificationResult = await issuer.verify(temp, options);
+      expect(verificationResult.verified).to.equal(true);
+    }).slow(5000).timeout(10000);
+
+    it('should verify with DCC context', async () => {
+      const options = {
+        'verificationMethod': identifer
+      };
+
+      const temp = await issuer.sign(dccCredential, options);
       const verificationResult = await issuer.verify(temp, options);
       expect(verificationResult.verified).to.equal(true);
     }).slow(5000).timeout(10000);
