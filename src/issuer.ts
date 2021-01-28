@@ -4,6 +4,7 @@ import { PublicKey, DIDDocument } from "./types"
 import { SignatureOptions, getSigningKeyIdentifier, getSigningDate, getProofProperty } from "./signatures";
 import { default as demoCredential } from "./demoCredential.json";
 import { v4 as uuidv4 } from 'uuid';
+const didContext = require('did-context');
 
 import { contexts, documentLoaderFactory } from '@transmute/jsonld-document-loader';
 import DccContextV1 from "./contexts/dcc-v1.json";
@@ -30,6 +31,8 @@ export function createIssuer(unlockedDID: DIDDocument) {
         ...contexts.W3C_Decentralized_Identifiers
       },
     })
+    // workaround for DB using permaid
+    .addContext({ [didContext.constants.DID_CONTEXT_URL]: didContext.contexts.get(didContext.constants.DID_CONTEXT_URL) })
     .addContext({ [LdsJws2020ContextV1Url]: LdsJws2020ContextV1 })
     .addContext({ [DccContextV1Url]: DccContextV1 })
     .addResolver({
