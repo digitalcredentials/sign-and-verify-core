@@ -1,4 +1,3 @@
-import jsonld from "jsonld";
 import { JsonWebKey, JsonWebSignature } from "@transmute/json-web-signature-2020";
 import vc from "vc-js";
 import { PublicKey, DIDDocument } from "./types"
@@ -13,7 +12,6 @@ import LdsJws2020ContextV1 from "./contexts/lds-jws2020-v1.json";
 const DccContextV1Url = "https://w3id.org/dcc/v1";
 const LdsJws2020ContextV1Url = "https://w3c-ccg.github.io/lds-jws2020/contexts/lds-jws2020-v1.json";
 const CredentialExamplesV1Url = "https://www.w3.org/2018/credentials/examples/v1";
-
 
 const VerificationMethod = "verificationMethod";
 const Challenge = "challenge";

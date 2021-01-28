@@ -40,7 +40,7 @@ const dccCredential =
     "https://w3id.org/dcc/v1"
   ],
   'id': 'https://digitalcredentials.github.io/samples/certificate/1fe91f0f-4c64-48c8-bfc8-7132f75776fe/',
-  'type': ['VerifiableCredential'],
+  'type': ['VerifiableCredential', 'LearningCredential'],
   'issuer': {
     'type': 'Issuer',
     'id': 'did:web:digitalcredentials.github.io',
@@ -49,17 +49,17 @@ const dccCredential =
   },
   'issuanceDate': '2021-01-19T18:22:34.772810+00:00',
   'credentialSubject': {
-    'type': 'schema:Person',
+    'type': 'Person',
     'id': 'did:example:456',
     'name': 'Percy',
 
     'hasCredential': {
-      'type': 'schema:EducationalOccupationalCredential',
-      'name': 'DCC Sample Credential Completion',
+      'type': ['EducationalOccupationalCredential', 'ProgramCompletionCredential'],
+      'name': 'DCC Sample Program Completion Credential',
       'description': '<p>Learn stuff about requesting a DCC credential.</p>',
 
       'awardedOnCompletionOf': {
-        'type': 'schema:EducationalOccupationalProgram',
+        'type': 'EducationalOccupationalProgram',
         'identifier': 'program-v1:Sample',
         'name': 'Successful completion of sample request program',
         'description': '<p>Learn stuff about DCC credential issuance</p>',
@@ -70,7 +70,6 @@ const dccCredential =
     }
   }
 }
-
 
 const verifiablePresentation = {
   "@context": [

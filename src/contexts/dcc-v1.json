@@ -6,6 +6,7 @@
     "type": "@type",
     "schema": "http://schema.org/",
     "obi": "https://w3id.org/openbadges#",
+    "dcc": "https://w3id.org/dcc/v1#",
 
     "EducationalOccupationalCredential": "schema:EducationalOccupationalCredential",
     "EducationalOccupationalProgram": "schema:EducationalOccupationalProgram",
@@ -25,6 +26,10 @@
     "awardedOnCompletionOf": { "@reverse": "schema:educationalCredentialAwarded" },
 
     "hasCredential": "schema:hasCredential",
-    "Issuer": "obi:Issuer"
+    "Issuer": "obi:Issuer",
+
+    "ProgramCompletionCredential": "dcc:ProgramCompletionCredential",
+    "CourseCompletionCredential": "dcc:CourseCompletionCredential",
+    "LearningCredential": "dcc:LearningCredential"
   }
 }
