@@ -10,10 +10,13 @@
 
     "EducationalOccupationalCredential": "schema:EducationalOccupationalCredential",
     "EducationalOccupationalProgram": "schema:EducationalOccupationalProgram",
+    "Course": "schema:Course",
+    "Event": "schema:Event",
     "Person": "schema:Person",
     "name": "schema:name",
     "url": "schema:url",
     "identifier": "schema:identifier",
+    "courseCode": "schema:courseCode",
     "numberOfCredits": "schema:numberOfCredits",
     "startDate": "schema:startDate",
     "endDate": "schema:endDate",
