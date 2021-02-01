@@ -11,7 +11,7 @@
     "EducationalOccupationalCredential": "schema:EducationalOccupationalCredential",
     "EducationalOccupationalProgram": "schema:EducationalOccupationalProgram",
     "Course": "schema:Course",
-    "Event": "schema:Event",
+    "CourseInstance": "schema:CourseInstance",
     "Person": "schema:Person",
     "name": "schema:name",
     "url": "schema:url",
@@ -22,6 +22,7 @@
     "endDate": "schema:endDate",
     "value": "schema:value",
     "educationalCredentialAwarded": "schema:educationalCredentialAwarded",
+    "hasCourseInstance": "schema:hasCourseInstance",
 
     "description": { "@id": "schema:description" },
     "image": { "@id": "schema:image", "@type": "@id" },
