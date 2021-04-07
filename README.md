@@ -7,9 +7,9 @@ Signing and verification of [Verifiable Credentials](https://www.w3.org/TR/vc-da
 Install the npm package:
 
 ```
-npm i sign-and-verify-core
+npm i @digitalcredentials/sign-and-verify-core
 OR
-yarn add sign-and-verify-core
+yarn add @digitalcredentials/sign-and-verify-core
 ```
 
 and then use that issuer...
