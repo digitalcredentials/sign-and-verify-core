@@ -13,7 +13,7 @@ const simpleCredential = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
-    "https://w3c-ccg.github.io/lds-jws2020/contexts/lds-jws2020-v1.json",
+    "https://w3id.org/security/jws/v1",
   ],
   "id": "http://example.gov/credentials/3732",
   "type": [
@@ -36,7 +36,7 @@ const dccCredential =
   '@context': [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
-    "https://w3c-ccg.github.io/lds-jws2020/contexts/lds-jws2020-v1.json",
+    "https://w3id.org/security/jws/v1",
     "https://w3id.org/dcc/v1"
   ],
   'id': 'https://digitalcredentials.github.io/samples/certificate/1fe91f0f-4c64-48c8-bfc8-7132f75776fe/',
@@ -75,7 +75,7 @@ const verifiablePresentation = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
-    "https://w3c-ccg.github.io/lds-jws2020/contexts/lds-jws2020-v1.json"
+    "https://w3id.org/security/jws/v1"
   ],
   "type": [
     "VerifiablePresentation"

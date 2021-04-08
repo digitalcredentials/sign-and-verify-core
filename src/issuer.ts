@@ -11,7 +11,8 @@ import DccContextV1 from "./contexts/dcc-v1.json";
 import LdsJws2020ContextV1 from "./contexts/lds-jws2020-v1.json";
 
 const DccContextV1Url = "https://w3id.org/dcc/v1";
-const LdsJws2020ContextV1Url = "https://w3c-ccg.github.io/lds-jws2020/contexts/lds-jws2020-v1.json";
+const LdsJws2020ContextV1Url = "https://w3id.org/security/jws/v1";
+
 const CredentialExamplesV1Url = "https://www.w3.org/2018/credentials/examples/v1";
 
 const VerificationMethod = "verificationMethod";
@@ -23,7 +24,7 @@ export function getController(fullDid: string) {
 
 export function createIssuer(unlockedDID: DIDDocument) {
 
-  const customLoader = documentLoaderFactory.pluginFactory
+  const customLoaderProto = documentLoaderFactory.pluginFactory
     .build({
       contexts: {
         ...contexts.W3C_Verifiable_Credentials,
@@ -34,15 +35,16 @@ export function createIssuer(unlockedDID: DIDDocument) {
     // workaround for DB using permaid
     .addContext({ [didContext.constants.DID_CONTEXT_URL]: didContext.contexts.get(didContext.constants.DID_CONTEXT_URL) })
     .addContext({ [LdsJws2020ContextV1Url]: LdsJws2020ContextV1 })
-    .addContext({ [DccContextV1Url]: DccContextV1 })
-    .addResolver({
+    .addContext({ [DccContextV1Url]: DccContextV1 });
+
+  const customLoader = customLoaderProto.
+    addResolver({
       [unlockedDID.id]: {
         resolve: async (_did: string) => {
           return unlockedDID;
         },
       },
-    })
-    .buildDocumentLoader();
+    }).buildDocumentLoader();
 
   const unlockedAssertionMethods = new Map<string, PublicKey>([
     [unlockedDID.publicKey[0].id, unlockedDID.publicKey[0]]
