@@ -1,6 +1,12 @@
+
 import { readFileSync } from 'fs';
 import { expect } from 'chai';
 import 'mocha';
+import crypto from "crypto";
+const didKeyDriver = require('@digitalbazaar/did-method-key').driver();
+const vc = require('@digitalbazaar/vc');
+const ed25519 = require('@digitalbazaar/ed25519-signature-2020');
+const ed25519Verification = require('@digitalbazaar/ed25519-verification-key-2020');
 
 import { createIssuer, getController } from './issuer';
 import { getProofProperty } from './signatures';
@@ -13,7 +19,7 @@ const simpleCredential = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
-    "https://w3id.org/security/jws/v1",
+    "https://w3id.org/security/jws/v1"
   ],
   "id": "http://example.gov/credentials/3732",
   "type": [
@@ -71,7 +77,8 @@ const dccCredential =
   }
 }
 
-const verifiablePresentation = {
+const verifiablePresentation = 
+{
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://www.w3.org/2018/credentials/examples/v1",
@@ -91,6 +98,28 @@ const verifiablePresentation = {
     "verificationMethod": "did:web:digitalcredentials.github.io#96K4BSIWAkhcclKssb8yTWMQSz4QzPWBy-JsAFlwoIs"
   }
 };
+
+const verifiablePresentationDidKey = 
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://w3id.org/security/jws/v1"
+  ],
+  "type": [
+    "VerifiablePresentation"
+  ],
+  "id": "123",
+  "holder": "did:key:z6Mks47FaLKufWC8Uu4djvsUm2pZ9ADVzBscy4S6k63PsaH7",
+  "proof": {
+    "type": "Ed25519Signature2018",
+    "created": "2021-04-27T00:53:01.793Z",
+    "challenge": "c71f0a0d-0ff5-480d-bf95-a11bf62f2e04",
+    "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..-gUUtRlt4ltJQ5ZWpTPEE4mw3RkauIND9rpJInRS7yyq7UP0UrzPew7ZLktbw3ExtbTO-kjXn4n9X0ZvnVCvBA",
+    "proofPurpose": "authentication",
+    "verificationMethod": "#z6Mks47FaLKufWC8Uu4djvsUm2pZ9ADVzBscy4S6k63PsaH7"
+  }
+};
+
 
 const unlockedDidDocument = JSON.parse(readFileSync("data/unlocked-did:web:digitalcredentials.github.io.json").toString("ascii"));
 const issuer = createIssuer(unlockedDidDocument)
@@ -182,6 +211,71 @@ describe('Issuer test',
 
       const credential = await issuer.requestDemoCredential(request, true);
       expect(credential.credentialSubject.id).to.equal("did:example:me");
+    }).slow(5000).timeout(10000);
+
+    it('should verify presentation signed with did:key', async () => {
+
+      const { didKeyDocument, keyPairs, methodFor } = await didKeyDriver.generate();
+      const kp = keyPairs.entries().next().value;
+      const k = kp[0];
+      const v = kp[1];
+      console.log(k);
+      
+
+      const challenge = 'test123';
+      const signingSuite = new ed25519.Ed25519Signature2020({key: v});
+      console.log(JSON.stringify(signingSuite, null, 2));
+
+      //ed25519Key.id = ed25519Key.controller + ed25519Key.id;
+
+      const testPres = {
+        '@context': [
+          'https://www.w3.org/2018/credentials/v1',
+         'https://w3id.org/security/jws/v1',
+         //'https://www.w3.org/ns/did/v1'
+        // 'https://w3id.org/security/v1'
+        ],
+        type: ['VerifiablePresentation'],
+        id: '123',
+        holder: keyPairs.controller,
+      };
+
+      const signedPresentation = await vc.signPresentation({
+        presentation: testPres,
+        documentLoader: issuer.customLoader,
+        suite: signingSuite,
+        challenge: challenge,
+      });
+      //https://www.w3.org/ns/did/v1
+      //https://w3id.org/did/v1
+      //signedPresentation['@context'].push('https://www.w3.org/ns/did/v1');
+
+      console.log(JSON.stringify(signedPresentation));
+
+      const proofVm = signedPresentation.proof.verificationMethod;
+
+      /*
+      const didDocument = await didKeyDriver.get(
+        proofVm
+      );
+
+      console.log(JSON.stringify(didDocument));
+      const vm = didDocument.didDocument.verificationMethod[0];
+      
+      const verifySuite = new ed25519.Ed25519Signature2020({
+        key: vm,
+      });
+
+      console.log(JSON.stringify(verifySuite));
+
+      const verified = await vc.verify({
+        presentation: signedPresentation,
+        documentLoader: issuer.customLoader,
+        suite: verifySuite,
+        challenge: challenge,
+      });
+      console.log(JSON.stringify(verified));*/
+
     }).slow(5000).timeout(10000);
 
   });

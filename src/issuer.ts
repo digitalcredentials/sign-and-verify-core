@@ -1,10 +1,11 @@
 import { JsonWebKey, JsonWebSignature } from "@transmute/json-web-signature-2020";
-import vc from "vc-js";
+const vc = require('@digitalbazaar/vc');
 import { PublicKey, DIDDocument } from "./types"
 import { SignatureOptions, getSigningKeyIdentifier, getSigningDate, getProofProperty } from "./signatures";
 import { default as demoCredential } from "./demoCredential.json";
 import { v4 as uuidv4 } from 'uuid';
 const didContext = require('did-context');
+const didKeyDriver = require('@digitalbazaar/did-method-key').driver();
 
 import { contexts, documentLoaderFactory } from '@transmute/jsonld-document-loader';
 import DccContextV1 from "./contexts/dcc-v1.json";
@@ -12,7 +13,6 @@ import LdsJws2020ContextV1 from "./contexts/lds-jws2020-v1.json";
 
 const DccContextV1Url = "https://w3id.org/dcc/v1";
 const LdsJws2020ContextV1Url = "https://w3id.org/security/jws/v1";
-
 const CredentialExamplesV1Url = "https://www.w3.org/2018/credentials/examples/v1";
 
 const VerificationMethod = "verificationMethod";
@@ -32,7 +32,7 @@ export function createIssuer(unlockedDID: DIDDocument) {
         ...contexts.W3C_Decentralized_Identifiers
       },
     })
-    // workaround for DB using permaid
+    // workaround for different DID contexts URLs
     .addContext({ [didContext.constants.DID_CONTEXT_URL]: didContext.contexts.get(didContext.constants.DID_CONTEXT_URL) })
     .addContext({ [LdsJws2020ContextV1Url]: LdsJws2020ContextV1 })
     .addContext({ [DccContextV1Url]: DccContextV1 });
@@ -44,7 +44,16 @@ export function createIssuer(unlockedDID: DIDDocument) {
           return unlockedDID;
         },
       },
-    }).buildDocumentLoader();
+    })
+    .addResolver({
+      'did:key:': {
+        resolve: async function(did: string) {
+          const { didDocument } = await didKeyDriver.get(did);
+          return didDocument;
+        },
+      },
+    })
+    .buildDocumentLoader();
 
   const unlockedAssertionMethods = new Map<string, PublicKey>([
     [unlockedDID.publicKey[0].id, unlockedDID.publicKey[0]]
@@ -56,7 +65,10 @@ export function createIssuer(unlockedDID: DIDDocument) {
   }
 
   function createSuite(options: SignatureOptions) {
+    //console.log("options: " + JSON.stringify(options, null, 2));
+    //console.log("ski: " + getSigningKeyIdentifier(options));
     const signingKey = createJwk(getSigningKeyIdentifier(options));
+    //console.log("sk: " + JSON.stringify(signingKey));
     const signatureSuite = new JsonWebSignature({
       key: signingKey,
       date: getSigningDate(options)
@@ -109,7 +121,7 @@ export function createIssuer(unlockedDID: DIDDocument) {
 
   async function createAndSignPresentation(credential: any, presentationId: string, holder: string, options: SignatureOptions) {
     const suite = createSuite(options);
-    const presentation = vc.createPresentation({
+    const presentation = await vc.createPresentation({
       verifiableCredential: credential,
       id: presentationId,
       holder: holder
@@ -173,6 +185,7 @@ export function createIssuer(unlockedDID: DIDDocument) {
     signPresentation,
     createAndSignPresentation,
     verifyPresentation,
-    requestDemoCredential
+    requestDemoCredential,
+    customLoader
   }
 }
