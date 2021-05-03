@@ -2,12 +2,8 @@ import { readFileSync } from 'fs';
 import { expect } from 'chai';
 import 'mocha';
 
-const didKeyDriver = require('@digitalbazaar/did-method-key').driver();
-const vc = require('@digitalbazaar/vc');
-const ed25519 = require('@digitalbazaar/ed25519-signature-2020');
-const ed25519Verification = require('@digitalbazaar/ed25519-verification-key-2020');
-
-import { createIssuer, getController } from './issuer';
+import { getController } from './common';
+import { create } from './issuer';
 import { getProofProperty } from './signatures';
 
 const identifer = 'did:web:digitalcredentials.github.io#z6MkrXSQTybtqyMasfSxeRBJxDvDUGqb7mt9fFVXkVn6xTG7';
@@ -67,36 +63,12 @@ const dccCredential =
   }
 }
 
-const verifiablePresentation = {
-  "@context": [
-    "https://www.w3.org/2018/credentials/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
-  ],
-  "type": [
-    "VerifiablePresentation"
-  ],
-  "id": "123",
-  "holder": "did:key:z6MkoSu3TY7zYt7RF9LAqXbW7VegC3SFAdLp32VWudSfv8Qy",
-  "proof": {
-    "type": "Ed25519Signature2020",
-    "created": "2021-05-01T23:38:10Z",
-    "verificationMethod": "did:key:z6MkoSu3TY7zYt7RF9LAqXbW7VegC3SFAdLp32VWudSfv8Qy#z6MkoSu3TY7zYt7RF9LAqXbW7VegC3SFAdLp32VWudSfv8Qy",
-    "proofPurpose": "authentication",
-    "challenge": "test123",
-    "proofValue": "z3Ukrcvwg59pPywog48R6xB6Fd5XWmPazqPCjdpaXpdKzaeNAc1Un1EF8VnVLbf4nvRk5SGiVDvgxddS66bi7kdAo"
-  }
-};
 
 const unlockedDidDocument = JSON.parse(readFileSync("data/unlocked-did:web:digitalcredentials.github.io.json").toString("ascii"));
-const issuer = createIssuer(unlockedDidDocument)
+const issuer = create(unlockedDidDocument);
 
 describe('Issuer test',
   () => {
-    it('should parse controller', () => {
-      const result = getController(identifer);
-      expect(result).to.equal(controller);
-    });
-
     it('should create key', async () => {
       const result = await issuer.createKey(identifer);
       expect(result.id).to.equal(identifer);
@@ -117,30 +89,9 @@ describe('Issuer test',
         'verificationMethod': identifer
       };
       const result = await issuer.sign(dccCredential, options);
-      console.log(JSON.stringify(result, null, 2));
+     // console.log(JSON.stringify(result, null, 2));
       expect(result.issuer.id).to.equal(controller);
     }).slow(5000).timeout(10000);
-
-    it('should verify', async () => {
-      const options = {
-        'verificationMethod': identifer
-      };
-
-      const temp = await issuer.sign(simpleCredential, options);
-      const verificationResult = await issuer.verify(temp, options);
-      expect(verificationResult.verified).to.equal(true);
-    }).slow(5000).timeout(10000);
-
-    it('should verify with DCC context', async () => {
-      const options = {
-        'verificationMethod': identifer
-      };
-
-      const temp = await issuer.sign(dccCredential, options);
-      const verificationResult = await issuer.verify(temp, options);
-      expect(verificationResult.verified).to.equal(true);
-    }).slow(5000).timeout(10000);
-
 
     it('should sign presentation', async () => {
       const options = {
@@ -152,64 +103,5 @@ describe('Issuer test',
       expect(vmResult).to.equal(identifer);
     }).slow(5000).timeout(10000);
 
-
-    it('should verify presentation', async () => {
-/*
-      const { didKeyDocument, keyPairs, methodFor } = await didKeyDriver.generate();
-      const kp = keyPairs.entries().next().value;
-      const k = kp[0];
-      const v = kp[1];
-
-      const challenge = 'test123';
-      const signingSuite = new ed25519.Ed25519Signature2020({key: v});
-
-      const testPres = {
-        '@context': [
-          'https://www.w3.org/2018/credentials/v1',
-        ],
-        type: ['VerifiablePresentation'],
-        id: '123',
-        holder: v.controller,
-      };
-
-      const signedPresentation = await vc.signPresentation({
-        presentation: testPres,
-        documentLoader: issuer.customLoader,
-        suite: signingSuite,
-        challenge: challenge
-      });
-      //https://www.w3.org/ns/did/v1
-      //https://w3id.org/did/v1
-      //signedPresentation['@context'].push('https://www.w3.org/ns/did/v1');
-
-      console.log(JSON.stringify(signedPresentation, null, 2));
-
-      const proofVm = signedPresentation.proof.verificationMethod;*/
-
-      const options = {
-        'verificationMethod': 'did:key:z6MkoSu3TY7zYt7RF9LAqXbW7VegC3SFAdLp32VWudSfv8Qy#z6MkoSu3TY7zYt7RF9LAqXbW7VegC3SFAdLp32VWudSfv8Qy',
-        'challenge': challenge,
-      };
-      const verificationResult = await issuer.verifyPresentation(verifiablePresentation, options);
-      expect(verificationResult.verified).to.equal(true);
-    }).slow(5000).timeout(10000);
-
-    it("should get demo credential", async () => {
-      const options = {
-        'verificationMethod': 'did:key:z6MkoSu3TY7zYt7RF9LAqXbW7VegC3SFAdLp32VWudSfv8Qy#z6MkoSu3TY7zYt7RF9LAqXbW7VegC3SFAdLp32VWudSfv8Qy',
-        'challenge': challenge
-      };
-      const credential = await issuer.requestDemoCredential(verifiablePresentation);
-      expect(credential.credentialSubject.id).to.equal("did:key:z6MkoSu3TY7zYt7RF9LAqXbW7VegC3SFAdLp32VWudSfv8Qy");
-    }).slow(5000).timeout(10000);
-
-    it("should get demo credential without verification", async () => {
-      const request = {
-        holder: "did:example:me"
-      };
-
-      const credential = await issuer.requestDemoCredential(request, true);
-      expect(credential.credentialSubject.id).to.equal("did:example:me");
-    }).slow(5000).timeout(10000);
 
   });
