@@ -105,7 +105,7 @@ describe('Verifier test',
       };
 
       //   TODO
-      //  const temp = await issuer.sign(simpleCredential, options);
+      // const temp = await issuer.sign(simpleCredential, options);
       //  const verificationResult = await verifier.verify(temp, options);
       //  expect(verificationResult.verified).to.equal(true);
     }).slow(5000).timeout(10000);
