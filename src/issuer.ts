@@ -44,12 +44,13 @@ export function createIssuer(unlockedDID: DIDDocument) {
         },
       },
     })
-    .addResolver({['did:key:']: {
-      resolve: async (_did: string) => {
-        return didKeyDriver.get({ did: _did });
+    .addResolver({
+      ['did:key:']: {
+        resolve: async (_did: string) => {
+          return didKeyDriver.get({ did: _did });
 
+        },
       },
-    },
     })
     .buildDocumentLoader();
 
@@ -57,24 +58,39 @@ export function createIssuer(unlockedDID: DIDDocument) {
     [unlockedDID.assertionMethod[0].id, new Ed25519VerificationKey2020(unlockedDID.assertionMethod[0])]
   ]);
 
+  async function resolveDid(assertionMethod: string): Promise<any> {
+    if (assertionMethod == null) {
+      throw new Error(`Can't resolve empty DID string`);
+    }
+    const controller = getController(assertionMethod);
+    const doc = await customLoader(controller);
+    console.log(JSON.stringify(doc, null, 2));
+    return doc.document;
+    /*
+    if (!controller.startsWith('did:key')) {
+      throw new Error(`DID method (${controller}) not supported`);
+    } 
+
+    const res = await didKeyDriver.get({ did: controller });
+    if (res == null) {
+      throw new Error(`Unable to resolve DID method for ${controller}`);
+    }
+    return res;*/
+
+  }
   async function createKey(assertionMethod: string): Promise<Ed25519VerificationKey2020> {
     const keyInfo: Ed25519VerificationKey2020 | undefined = unlockedAssertionMethods.get(assertionMethod);
     if (keyInfo == null) {
-      const controller = getController(assertionMethod);
-      if (controller.startsWith('did:key')) {
-        const res = await didKeyDriver.get({ did: controller });
-        if (res != null) {
-          const key = res.verificationMethod[0];
-          return new Ed25519VerificationKey2020(key);
-        }
-      }
-      throw new Error(`key for assertion method (${assertionMethod}) not found`)
+      const res = await resolveDid(assertionMethod);
+      const key = res.verificationMethod[0];
+      return new Ed25519VerificationKey2020(key);
     }
-  
+
     return keyInfo;
   }
 
-  async function createSigningKey(options: SignatureOptions) : Promise<Ed25519Signature2020> {
+
+  async function createSigningKey(options: SignatureOptions): Promise<Ed25519Signature2020> {
     const signingKey = await createKey(getSigningKeyIdentifier(options));
     const signatureSuite = new Ed25519Signature2020({
       key: signingKey,
@@ -83,19 +99,37 @@ export function createIssuer(unlockedDID: DIDDocument) {
     return signatureSuite;
   }
 
-  async function createVerificationKey(options: SignatureOptions) : Promise<Ed25519VerificationKey2020> {
+  async function createVerificationKey(options: SignatureOptions): Promise<Ed25519VerificationKey2020> {
     const signingKey = await createKey(getSigningKeyIdentifier(options));
     return signingKey;
   }
 
-  async function verify(verifiableCredential: any, options: SignatureOptions) : Promise<any> {
-    const suite = await createVerificationKey(options);
+  const assertionController = {
+    '@context': 'https://w3id.org/security/v2',
+    id: 'https://example.edu/issuers/565049',
+    // actual keys are going to be added in the test suite before() block
+    assertionMethod: [],
+    authentication: []
+  };
+  module.exports = assertionController;
+
+  async function verify(verifiableCredential: any, options: SignatureOptions): Promise<any> {
+    const verificationMethod = getSigningKeyIdentifier(options);
+    const didDocument = await resolveDid(verificationMethod);
+
+    const key = didDocument.verificationMethod ? didDocument.verificationMethod[0] : didDocument.assertionMethod[0];
+    const verificationKey = new Ed25519VerificationKey2020(key);
     try {
+      /*
       let valid = await vc.verifyCredential({
-        credential: { ...verifiableCredential },
-        documentLoader: customLoader,
-        suite: suite
+        credential: verifiableCredential,
+        controller: didDocument,
+        suite: verificationKey,
+        customLoader
       });
+      return valid;*/
+
+      const valid = await vc.verifyCredential({ credential: verifiableCredential, suite: verificationKey });
       return valid;
     }
     catch (e) {
@@ -104,7 +138,7 @@ export function createIssuer(unlockedDID: DIDDocument) {
     }
   }
 
-  async function sign(credential: any, options: SignatureOptions) : Promise<any> {
+  async function sign(credential: any, options: SignatureOptions): Promise<any> {
     const suite = await createSigningKey(options);
     // this library attaches the signature on the original object, so make a copy 
     const credCopy = JSON.parse(JSON.stringify(credential));
@@ -121,7 +155,7 @@ export function createIssuer(unlockedDID: DIDDocument) {
     }
   }
 
-  async function signPresentation(presentation: any, options: SignatureOptions) : Promise<any> {
+  async function signPresentation(presentation: any, options: SignatureOptions): Promise<any> {
     const suite = await createSigningKey(options);
 
     let result = await vc.signPresentation({
@@ -133,7 +167,7 @@ export function createIssuer(unlockedDID: DIDDocument) {
     return result;
   }
 
-  async function createAndSignPresentation(credential: any, presentationId: string, holder: string, options: SignatureOptions) : Promise<any> {
+  async function createAndSignPresentation(credential: any, presentationId: string, holder: string, options: SignatureOptions): Promise<any> {
     const suite = await createSigningKey(options);
     const presentation = vc.createPresentation({
       verifiableCredential: credential,
@@ -150,7 +184,7 @@ export function createIssuer(unlockedDID: DIDDocument) {
     return result;
   }
 
-  async function verifyPresentation(verifiablePresentation: any, options: SignatureOptions) : Promise<any> {
+  async function verifyPresentation(verifiablePresentation: any, options: SignatureOptions): Promise<any> {
     const suite = await createVerificationKey(options);
 
     let valid = await vc.verify({
@@ -162,7 +196,7 @@ export function createIssuer(unlockedDID: DIDDocument) {
     return valid;
   }
 
-  async function requestDemoCredential(verifiablePresentation: any, skipVerification = false) : Promise<any> {
+  async function requestDemoCredential(verifiablePresentation: any, skipVerification = false): Promise<any> {
 
     if (!skipVerification) {
       // issuer also needs to check if challenge is expected
@@ -178,7 +212,7 @@ export function createIssuer(unlockedDID: DIDDocument) {
 
     const subjectDid = verifiablePresentation.holder;
     const verificationMethod = unlockedDID.assertionMethod[0].id;
-    const options = new SignatureOptions({verificationMethod: verificationMethod});
+    const options = new SignatureOptions({ verificationMethod: verificationMethod });
 
     let copy = JSON.parse(JSON.stringify(demoCredential));
     copy.id = uuidv4();

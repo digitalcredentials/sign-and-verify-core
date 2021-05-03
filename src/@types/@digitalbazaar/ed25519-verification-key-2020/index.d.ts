@@ -10,6 +10,8 @@ declare module '@digitalbazaar/ed25519-verification-key-2020' {
     privateKeyMultibase: string;
 
     constructor(options = {});
+
+    verifier(): any;
   
   };
 
