@@ -21,7 +21,6 @@
     "@digitalbazaar/did-method-key": "^1.0.0",
     "@digitalbazaar/ed25519-signature-2020": "^2.1.0",
     "@digitalbazaar/ed25519-verification-key-2020": "^2.1.1",
-    "@digitalbazaar/jws-linked-data-signature": "^1.0.1",
     "@digitalbazaar/security-context": "^1.0.0",
     "@digitalbazaar/vc": "^1.0.0",
     "@interop/did-web-resolver": "^1.1.0",
@@ -30,14 +29,15 @@
     "@types/node": "^14.14.43",
     "browser-or-node": "^1.3.0",
     "crypto-ld": "^5.1.0",
-    "did-context": "^2.0.0",
+    "did-context": "^3.0.1",
     "ed25519-signature-2020-context": "^1.1.0",
     "jose": "^1.28.1",
     "jsonld": "^5.2.0",
     "jsonld-signatures": "^9.0.2",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.9",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "x25519-key-agreement-2020-context": "^1.0.0"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",

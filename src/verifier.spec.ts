@@ -121,16 +121,16 @@ describe('Verifier test',
       //   expect(verificationResult.verified).to.equal(true);
     }).slow(5000).timeout(10000);
 
-    it('should verify presentation', async () => {
+    it.only('should verify presentation', async () => {
       /*
             const { didKeyDocument, keyPairs, methodFor } = await didKeyDriver.generate();
             const kp = keyPairs.entries().next().value;
             const k = kp[0];
             const v = kp[1];
-      
+
             const challenge = 'test123';
             const signingSuite = new ed25519.Ed25519Signature2020({key: v});
-      
+
             const testPres = {
               '@context': [
                 'https://www.w3.org/2018/credentials/v1',
@@ -139,7 +139,7 @@ describe('Verifier test',
               id: '123',
               holder: v.controller,
             };
-      
+
             const signedPresentation = await vc.signPresentation({
               presentation: testPres,
               documentLoader: issuer.customLoader,
@@ -149,9 +149,9 @@ describe('Verifier test',
             //https://www.w3.org/ns/did/v1
             //https://w3id.org/did/v1
             //signedPresentation['@context'].push('https://www.w3.org/ns/did/v1');
-      
+
             console.log(JSON.stringify(signedPresentation, null, 2));
-      
+
             const proofVm = signedPresentation.proof.verificationMethod;*/
 
       const options = {
