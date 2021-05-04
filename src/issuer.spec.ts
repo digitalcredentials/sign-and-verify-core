@@ -81,6 +81,7 @@ describe('Issuer test',
         'verificationMethod': identifer
       };
       const result = await issuer.sign(simpleCredential, options);
+      //console.log(JSON.stringify(result, null, 2));
       expect(result.issuer).to.equal(controller);
     }).slow(5000).timeout(10000);
 

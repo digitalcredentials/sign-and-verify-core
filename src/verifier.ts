@@ -1,6 +1,6 @@
 import { DIDDocument } from "./types"
-import { SignatureOptions, getSigningKeyIdentifier } from "./signatures";
-import { getCustomLoaderProto, getController } from "./common"
+import { SignatureOptions } from "./signatures";
+import { getCustomLoaderProto } from "./common"
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
 import { Ed25519Signature2020 } from '@digitalbazaar/ed25519-signature-2020';
 
@@ -28,42 +28,12 @@ export function create(preloadedDid: DIDDocument) {
     })
     .buildDocumentLoader();
 
-  async function resolveDid(controller: string): Promise<any> {
-    if (controller == null) {
-      throw new Error(`Can't resolve empty DID string`);
-    }
-    const doc = await customLoader(controller);
-    if (doc == null) {
-      throw new Error(`did doc for controller ${controller} not found`);
-    }
-    return doc.document;
-  }
-
-  async function createVerificationKey(verificationMethod: string): Promise<Ed25519VerificationKey2020> {
-    const controller = getController(verificationMethod);
-    const didDocument = await resolveDid(controller);
-    const keyInfo = didDocument.verificationMethod ? didDocument.verificationMethod[0] : didDocument.assertionMethod[0];
-    return new Ed25519VerificationKey2020(keyInfo);
-  }
-
   async function verify(verifiableCredential: any, options: SignatureOptions): Promise<any> {
-    // const verificationMethod = getSigningKeyIdentifier(options);
-    // const key = await createVerificationKey(getSigningKeyIdentifier(options));
-
     // During verification, the public key is fetched via documentLoader,
     // so no key is necessary when creating the suite
     const suite = new Ed25519Signature2020();
 
     try {
-      /*
-      let valid = await vc.verifyCredential({
-        credential: verifiableCredential,
-        controller: didDocument,
-        suite: verificationKey,
-        customLoader
-      });
-      return valid;*/
-
       const valid = await vc.verifyCredential({
         credential: verifiableCredential,
         documentLoader: customLoader,
@@ -78,8 +48,6 @@ export function create(preloadedDid: DIDDocument) {
   }
 
   async function verifyPresentation(verifiablePresentation: any, options: SignatureOptions): Promise<any> {
-    // const key = await createVerificationKey(getSigningKeyIdentifier(options));
-
     // During verification, the public key is fetched via documentLoader,
     // so no key is necessary when creating the suite
     const suite = new Ed25519Signature2020();
@@ -94,7 +62,6 @@ export function create(preloadedDid: DIDDocument) {
   }
 
   return {
-    createVerificationKey,
     verify,
     verifyPresentation
   }
