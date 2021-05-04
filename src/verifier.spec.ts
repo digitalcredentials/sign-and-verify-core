@@ -2,18 +2,10 @@ import { readFileSync } from 'fs';
 import { expect } from 'chai';
 import 'mocha';
 
-const didKeyDriver = require('@digitalbazaar/did-method-key').driver();
-const vc = require('@digitalbazaar/vc');
-const ed25519 = require('@digitalbazaar/ed25519-signature-2020');
-const ed25519Verification = require('@digitalbazaar/ed25519-verification-key-2020');
-
 import { create } from './verifier';
-import { getProofProperty } from './signatures';
 
 const identifer = 'did:web:digitalcredentials.github.io#z6MkrXSQTybtqyMasfSxeRBJxDvDUGqb7mt9fFVXkVn6xTG7';
-const controller = 'did:web:digitalcredentials.github.io';
 const challenge = '123';
-const presentationId = '456'
 const simpleCredentialSigned = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
@@ -109,7 +101,7 @@ const verifiablePresentation = {
 };
 
 const preloadedDidDocument = JSON.parse(readFileSync("data/public-did:web:digitalcredentials.github.io.json").toString("ascii"));
-const verifier = create(preloadedDidDocument);
+const verifier = create([preloadedDidDocument]);
 
 describe('Verifier test',
   () => {
@@ -120,7 +112,6 @@ describe('Verifier test',
       };
 
       const verificationResult = await verifier.verify(simpleCredentialSigned, options);
-      console.log(JSON.stringify(verificationResult, null, 2));
       expect(verificationResult.verified).to.equal(true);
     }).slow(5000).timeout(10000);
 

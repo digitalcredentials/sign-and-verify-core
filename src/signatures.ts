@@ -20,7 +20,6 @@ export function getSigningKeyIdentifier(options: SignatureOptions): string {
 };
 
 export function getSigningDate(options: SignatureOptions): string {
-  // TODO: double-check this is how it's being used
   return options.created ? options.created! : new Date().toISOString()
 };
 
@@ -28,7 +27,7 @@ export function getProofProperty(vpProof: any, property: string): any {
   let propValue = null;
   if (vpProof.hasOwnProperty(property)) {
     propValue = vpProof[property];
-  } else if (vpProof.hasOwnProperty(`${SecurityPrefix}#${property}`)){
+  } else if (vpProof.hasOwnProperty(`${SecurityPrefix}#${property}`)) {
     propValue = vpProof[`${SecurityPrefix}#${property}`];
   } else {
     throw new Error(`Invalid proof property ${property}`);

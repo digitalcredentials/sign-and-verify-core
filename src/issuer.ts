@@ -1,5 +1,5 @@
 import { DIDDocument } from "./types";
-import { getCustomLoaderProto } from "./common";
+import { getCustomLoader, addDidDocuments, getPreloadedAssertionMethods } from "./common";
 import { SignatureOptions, getSigningKeyIdentifier, getSigningDate, getProofProperty } from "./signatures";
 import { default as demoCredential } from "./demoCredential.json";
 import { v4 as uuidv4 } from 'uuid';
@@ -10,21 +10,16 @@ const vc = require('@digitalbazaar/vc');
 const VerificationMethod = "verificationMethod";
 const Challenge = "challenge";
 
-export function create(unlockedDID: DIDDocument) {
+export function create(unlockedDIDDocuments: DIDDocument[], defaultSigningIdentifier?: string) {
 
-  const customLoader = getCustomLoaderProto()
-    .addResolver({
-      [unlockedDID.id]: {
-        resolve: async (_did: string) => {
-          return unlockedDID;
-        },
-      },
-    })
-    .buildDocumentLoader();
+  let customLoaderProto = getCustomLoader();
+  customLoaderProto = addDidDocuments(customLoaderProto, unlockedDIDDocuments);
+  let customLoader = customLoaderProto.buildDocumentLoader();
 
-  const unlockedAssertionMethods = new Map<string, Ed25519VerificationKey2020>([
-    [unlockedDID.assertionMethod[0].id, new Ed25519VerificationKey2020(unlockedDID.assertionMethod[0])]
-  ]);
+  const unlockedAssertionMethods: Map<string, Ed25519VerificationKey2020> = getPreloadedAssertionMethods(unlockedDIDDocuments);
+
+  const signingIdentifier = defaultSigningIdentifier ? defaultSigningIdentifier :
+    unlockedAssertionMethods.keys().next().value;
 
   async function createKey(assertionMethod: string): Promise<Ed25519VerificationKey2020> {
     const keyInfo: Ed25519VerificationKey2020 | undefined = unlockedAssertionMethods.get(assertionMethod);
@@ -92,30 +87,29 @@ export function create(unlockedDID: DIDDocument) {
 
   async function requestDemoCredential(verifiablePresentation: any, skipVerification = false): Promise<any> {
 
-    /*
     if (!skipVerification) {
       // issuer also needs to check if challenge is expected
       const verificationOptions = {
         verificationMethod: getProofProperty(verifiablePresentation.proof, VerificationMethod),
         challenge: getProofProperty(verifiablePresentation.proof, Challenge)
       };
-      const verificationResult = await verifyPresentation(verifiablePresentation, verificationOptions);
-      if (!verificationResult.verified) {
-        throw new Error("Invalid credential request");
-      }
+      // TODO const verificationResult = await verifyPresentation(verifiablePresentation, verificationOptions);
+      //  if (!verificationResult.verified) {
+      //    throw new Error("Invalid credential request");
+      //  }
+      //}
     }
 
     const subjectDid = verifiablePresentation.holder;
-    const verificationMethod = unlockedDID.assertionMethod[0].id;
+    const verificationMethod = signingIdentifier;
     const options = new SignatureOptions({ verificationMethod: verificationMethod });
 
     let copy = JSON.parse(JSON.stringify(demoCredential));
     copy.id = uuidv4();
     copy.credentialSubject.id = subjectDid;
     copy.issuanceDate = new Date().toISOString();
-    return sign(copy, options);*/
+    // return sign(copy, options);
     return null;
-    // TODO
   }
 
   return {

@@ -2,7 +2,6 @@ import { readFileSync } from 'fs';
 import { expect } from 'chai';
 import 'mocha';
 
-import { getController } from './common';
 import { create } from './issuer';
 import { getProofProperty } from './signatures';
 
@@ -63,9 +62,8 @@ const dccCredential =
   }
 }
 
-
 const unlockedDidDocument = JSON.parse(readFileSync("data/unlocked-did:web:digitalcredentials.github.io.json").toString("ascii"));
-const issuer = create(unlockedDidDocument);
+const issuer = create([unlockedDidDocument], identifer);
 
 describe('Issuer test',
   () => {
@@ -90,7 +88,6 @@ describe('Issuer test',
         'verificationMethod': identifer
       };
       const result = await issuer.sign(dccCredential, options);
-     // console.log(JSON.stringify(result, null, 2));
       expect(result.issuer.id).to.equal(controller);
     }).slow(5000).timeout(10000);
 
