@@ -1,4 +1,5 @@
+export * from './errors'
 export * from './issuer'
-export * from './verifier'
-export * from './types'
 export * from './signatures'
+export * from './types'
+export * from './verifier'
