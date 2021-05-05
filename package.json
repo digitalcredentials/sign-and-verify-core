@@ -36,7 +36,6 @@
     "jsonld-signatures": "^9.0.2",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.9",
-    "uuid": "^8.3.2",
     "x25519-key-agreement-2020-context": "^1.0.0"
   },
   "devDependencies": {

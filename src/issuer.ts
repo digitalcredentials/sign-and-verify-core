@@ -1,14 +1,10 @@
 import { DIDDocument } from "./types";
 import { getCustomLoader, addDidDocuments, getPreloadedAssertionMethods } from "./common";
 import { SignatureOptions, getSigningKeyIdentifier, getSigningDate, getProofProperty } from "./signatures";
-import { default as demoCredential } from "./demoCredential.json";
-import { v4 as uuidv4 } from 'uuid';
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
 import { Ed25519Signature2020 } from '@digitalbazaar/ed25519-signature-2020';
 
 const vc = require('@digitalbazaar/vc');
-const VerificationMethod = "verificationMethod";
-const Challenge = "challenge";
 
 export function create(unlockedDIDDocuments: DIDDocument[], defaultSigningIdentifier?: string) {
 
@@ -84,40 +80,11 @@ export function create(unlockedDIDDocuments: DIDDocument[], defaultSigningIdenti
     return result;
   }
 
-
-  async function requestDemoCredential(verifiablePresentation: any, skipVerification = false): Promise<any> {
-
-    if (!skipVerification) {
-      // issuer also needs to check if challenge is expected
-      const verificationOptions = {
-        verificationMethod: getProofProperty(verifiablePresentation.proof, VerificationMethod),
-        challenge: getProofProperty(verifiablePresentation.proof, Challenge)
-      };
-      // TODO const verificationResult = await verifyPresentation(verifiablePresentation, verificationOptions);
-      //  if (!verificationResult.verified) {
-      //    throw new Error("Invalid credential request");
-      //  }
-      //}
-    }
-
-    const subjectDid = verifiablePresentation.holder;
-    const verificationMethod = signingIdentifier;
-    const options = new SignatureOptions({ verificationMethod: verificationMethod });
-
-    let copy = JSON.parse(JSON.stringify(demoCredential));
-    copy.id = uuidv4();
-    copy.credentialSubject.id = subjectDid;
-    copy.issuanceDate = new Date().toISOString();
-    // return sign(copy, options);
-    return null;
-  }
-
   return {
     createKey,
     createSuite: createSigningKey,
     sign,
     signPresentation,
-    createAndSignPresentation,
-    requestDemoCredential
+    createAndSignPresentation
   }
 }
