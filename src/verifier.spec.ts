@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { expect } from 'chai';
 import 'mocha';
 
-import { create } from './verifier';
+import { createVerifier } from './verifier';
 
 const identifer = 'did:web:digitalcredentials.github.io#z6MkrXSQTybtqyMasfSxeRBJxDvDUGqb7mt9fFVXkVn6xTG7';
 const challenge = '123';
@@ -101,7 +101,7 @@ const verifiablePresentation = {
 };
 
 const preloadedDidDocument = JSON.parse(readFileSync("data/public-did:web:digitalcredentials.github.io.json").toString("ascii"));
-const verifier = create([preloadedDidDocument]);
+const verifier = createVerifier([preloadedDidDocument]);
 
 describe('Verifier test',
   () => {

@@ -6,7 +6,7 @@ import { Ed25519Signature2020 } from '@digitalbazaar/ed25519-signature-2020';
 
 const vc = require('@digitalbazaar/vc');
 
-export function create(unlockedDIDDocuments: DIDDocument[], defaultSigningIdentifier?: string) {
+export function createIssuer(unlockedDIDDocuments: DIDDocument[], defaultSigningIdentifier?: string) {
 
   let customLoaderProto = getCustomLoader();
   customLoaderProto = addDidDocuments(customLoaderProto, unlockedDIDDocuments);

@@ -6,7 +6,7 @@ import { Ed25519Signature2020 } from '@digitalbazaar/ed25519-signature-2020';
 const vc = require('@digitalbazaar/vc');
 const didKey = require('@digitalbazaar/did-method-key');
 
-export function create(preloadedDidDocuments: DIDDocument[]) {
+export function createVerifier(preloadedDidDocuments: DIDDocument[]) {
   const didKeyDriver = didKey.driver();
 
   let customLoaderProto = getCustomLoader();

@@ -3,7 +3,6 @@ import { contexts as ldContexts, documentLoaderFactory } from '@transmute/jsonld
 import DccContextV1 from "./contexts/dcc-v1.json";
 import { DIDDocument } from "./types";
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
-import { Ed25519Signature2020 } from '@digitalbazaar/ed25519-signature-2020';
 
 const didContext = require('did-context');
 const ed25519 = require('ed25519-signature-2020-context');
