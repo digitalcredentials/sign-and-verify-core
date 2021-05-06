@@ -39,7 +39,7 @@ export function createVerifier(preloadedDidDocuments: DIDDocument[]) {
     return transmuteLoader(url);
   };
 
-  async function verify(verifiableCredential: any, options: SignatureOptions): Promise<any> {
+  async function verify(verifiableCredential: any, options?: SignatureOptions): Promise<any> {
     // During verification, the public key is fetched via documentLoader,
     // so no key is necessary when creating the suite
     const suite = new Ed25519Signature2020();
@@ -58,7 +58,7 @@ export function createVerifier(preloadedDidDocuments: DIDDocument[]) {
     }
   }
 
-  async function verifyPresentation(verifiablePresentation: any, options: SignatureOptions): Promise<any> {
+  async function verifyPresentation(verifiablePresentation: any, options?: SignatureOptions): Promise<any> {
     // During verification, the public key is fetched via documentLoader,
     // so no key is necessary when creating the suite
     const suite = new Ed25519Signature2020();

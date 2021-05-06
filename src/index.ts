@@ -1,4 +1,3 @@
-export * from './errors'
 export * from './issuer'
 export * from './signatures'
 export * from './types'

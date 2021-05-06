@@ -7,8 +7,7 @@ declare module '@digitalbazaar/ed25519-verification-key-2020' {
     type: "JsonWebKey2020";
     controller: string;
     publicKeyMultibase: string;
-    privateKeyMultibase: string;
-
+    privateKeyMultibase?: string;
     constructor(options = {});
 
     verifier(): any;
