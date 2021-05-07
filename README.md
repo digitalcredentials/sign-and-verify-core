@@ -24,7 +24,7 @@ NOTE:  where we say 'credential', we mean a [Verifiable Credential](https://www.
 
 You'll need an unlocked DID document (like this one: [unlockedDID](data/unlocked-did:web:digitalcredentials.github.io.json)) with which to sign.
 
-```
+```js
 import {createIssuer} from sign-and-verify-core;
 
 // Load your unlocked DID from wherever you like.  For example, from the file system (if say you copied 

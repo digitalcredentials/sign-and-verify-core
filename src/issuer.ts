@@ -1,92 +1,48 @@
-import { JsonWebKey, JsonWebSignature } from "@transmute/json-web-signature-2020";
-import vc from "vc-js";
-import { PublicKey, DIDDocument } from "./types"
+import { DIDDocument } from "./types";
+import { getCustomLoader, addDidDocuments, getPreloadedAssertionMethods } from "./common";
 import { SignatureOptions, getSigningKeyIdentifier, getSigningDate, getProofProperty } from "./signatures";
-import { default as demoCredential } from "./demoCredential.json";
-import { v4 as uuidv4 } from 'uuid';
-const didContext = require('did-context');
+import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
+import { Ed25519Signature2020 } from '@digitalbazaar/ed25519-signature-2020';
 
-import { contexts, documentLoaderFactory } from '@transmute/jsonld-document-loader';
-import DccContextV1 from "./contexts/dcc-v1.json";
-import LdsJws2020ContextV1 from "./contexts/lds-jws2020-v1.json";
+const vc = require('@digitalbazaar/vc');
 
-const DccContextV1Url = "https://w3id.org/dcc/v1";
-const LdsJws2020ContextV1Url = "https://w3id.org/security/jws/v1";
+export function createIssuer(unlockedDIDDocuments: DIDDocument[], defaultSigningIdentifier?: string) {
 
-const CredentialExamplesV1Url = "https://www.w3.org/2018/credentials/examples/v1";
+  let customLoaderProto = getCustomLoader();
+  customLoaderProto = addDidDocuments(customLoaderProto, unlockedDIDDocuments);
+  let customLoader = customLoaderProto.buildDocumentLoader();
 
-const VerificationMethod = "verificationMethod";
-const Challenge = "challenge";
+  const unlockedAssertionMethods: Map<string, Ed25519VerificationKey2020> = getPreloadedAssertionMethods(unlockedDIDDocuments);
 
-export function getController(fullDid: string) {
-  return fullDid.split('#')[0];
-}
+  const signingIdentifier = defaultSigningIdentifier ? defaultSigningIdentifier :
+    unlockedAssertionMethods.keys().next().value;
 
-export function createIssuer(unlockedDID: DIDDocument) {
-
-  const customLoaderProto = documentLoaderFactory.pluginFactory
-    .build({
-      contexts: {
-        ...contexts.W3C_Verifiable_Credentials,
-        ...contexts.W3ID_Security_Vocabulary,
-        ...contexts.W3C_Decentralized_Identifiers
-      },
-    })
-    // workaround for DB using permaid
-    .addContext({ [didContext.constants.DID_CONTEXT_URL]: didContext.contexts.get(didContext.constants.DID_CONTEXT_URL) })
-    .addContext({ [LdsJws2020ContextV1Url]: LdsJws2020ContextV1 })
-    .addContext({ [DccContextV1Url]: DccContextV1 });
-
-  const customLoader = customLoaderProto.
-    addResolver({
-      [unlockedDID.id]: {
-        resolve: async (_did: string) => {
-          return unlockedDID;
-        },
-      },
-    }).buildDocumentLoader();
-
-  const unlockedAssertionMethods = new Map<string, PublicKey>([
-    [unlockedDID.publicKey[0].id, unlockedDID.publicKey[0]]
-  ]);
-
-  function createJwk(assertionMethod: string) {
-    const keyInfo: any = unlockedAssertionMethods.get(assertionMethod);
-    return new JsonWebKey(keyInfo);
+  async function createKey(assertionMethod: string): Promise<Ed25519VerificationKey2020> {
+    const keyInfo: Ed25519VerificationKey2020 | undefined = unlockedAssertionMethods.get(assertionMethod);
+    if (keyInfo == null) {
+      throw new Error(`key for assertionMethod ${assertionMethod} not found`);
+    }
+    return new Ed25519VerificationKey2020(keyInfo);
   }
 
-  function createSuite(options: SignatureOptions) {
-    const signingKey = createJwk(getSigningKeyIdentifier(options));
-    const signatureSuite = new JsonWebSignature({
+  async function createSigningKey(options: SignatureOptions): Promise<Ed25519Signature2020> {
+    const signingKey = await createKey(getSigningKeyIdentifier(options));
+    const signatureSuite = new Ed25519Signature2020({
       key: signingKey,
       date: getSigningDate(options)
     });
     return signatureSuite;
   }
 
-  async function verify(verifiableCredential: any, options: SignatureOptions) {
-    const suite = createSuite(options);
-    try {
-      let valid = await vc.verifyCredential({
-        credential: { ...verifiableCredential },
-        documentLoader: customLoader,
-        suite
-      });
-      return valid;
-    }
-    catch (e) {
-      console.error(e);
-      throw e;
-    }
-  }
-
-  async function sign(credential: any, options: SignatureOptions) {
-    const suite = createSuite(options);
+  async function sign(credential: any, options: SignatureOptions): Promise<any> {
+    const suite = await createSigningKey(options);
+    // this library attaches the signature on the original object, so make a copy 
+    const credCopy = JSON.parse(JSON.stringify(credential));
     try {
       let result = await vc.issue({
-        credential: credential,
-        documentLoader: customLoader,
-        suite
+        credential: credCopy,
+        suite: suite,
+        documentLoader: customLoader
       });
       return result;
     } catch (e) {
@@ -95,84 +51,40 @@ export function createIssuer(unlockedDID: DIDDocument) {
     }
   }
 
-  async function signPresentation(presentation: any, options: SignatureOptions) {
-    const suite = createSuite(options);
+  async function signPresentation(presentation: any, options: SignatureOptions): Promise<any> {
+    const suite = await createSigningKey(options);
 
     let result = await vc.signPresentation({
       presentation: presentation,
       documentLoader: customLoader,
-      suite,
+      suite: suite,
       challenge: options.challenge!
     });
     return result;
   }
 
-  async function createAndSignPresentation(credential: any, presentationId: string, holder: string, options: SignatureOptions) {
-    const suite = createSuite(options);
+  async function createAndSignPresentation(credential: any, presentationId: string, holder: string, options: SignatureOptions): Promise<any> {
+    const suite = await createSigningKey(options);
     const presentation = vc.createPresentation({
       verifiableCredential: credential,
       id: presentationId,
-      holder: holder
+      holder: holder,
     });
-    presentation["@context"].push(CredentialExamplesV1Url);
-    presentation["@context"].push(LdsJws2020ContextV1Url);
 
     let result = await vc.signPresentation({
       presentation: presentation,
       documentLoader: customLoader,
-      suite,
+      suite: suite,
       challenge: options.challenge!
     });
     return result;
   }
 
-  async function verifyPresentation(verifiablePresentation: any, options: SignatureOptions) {
-    const suite = createSuite(options);
-
-    let valid = await vc.verify({
-      presentation: { ...verifiablePresentation },
-      documentLoader: customLoader,
-      challenge: options.challenge!,
-      suite
-    });
-    return valid;
-  }
-
-  async function requestDemoCredential(verifiablePresentation: any, skipVerification = false) {
-
-    if (!skipVerification) {
-      // issuer also needs to check if challenge is expected
-      const verificationOptions = {
-        verificationMethod: getProofProperty(verifiablePresentation.proof, VerificationMethod),
-        challenge: getProofProperty(verifiablePresentation.proof, Challenge)
-      };
-      const verificationResult = await verifyPresentation(verifiablePresentation, verificationOptions);
-      if (!verificationResult.verified) {
-        throw new Error("Invalid credential request");
-      }
-    }
-
-    const subjectDid = verifiablePresentation.holder;
-    const verificationMethod = unlockedDID.assertionMethod[0];
-    const signatureOptions = {
-      verificationMethod: verificationMethod
-    };
-
-    let copy = JSON.parse(JSON.stringify(demoCredential));
-    copy.id = uuidv4();
-    copy.credentialSubject.id = subjectDid;
-    copy.issuanceDate = new Date().toISOString();
-    return sign(copy, signatureOptions);
-  }
-
   return {
-    createJwk,
-    createSuite,
-    verify,
+    createKey,
+    createSuite: createSigningKey,
     sign,
     signPresentation,
-    createAndSignPresentation,
-    verifyPresentation,
-    requestDemoCredential
+    createAndSignPresentation
   }
 }

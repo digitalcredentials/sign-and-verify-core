@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
     /* https://aka.ms/tsconfig.json to read more about this file */
-    "paths": {                                /* 'shortcuts' for import statements, relative to baseUrl */
-      "jsonld": ["./types/jsonld"],
-      "vc-js": ["./types/vc-js"]
+    "paths": {
+      "*" : ["src/@types/*"]
     },
     "baseUrl": ".",                           /* Need to set the baseURL when using 'paths' */
     "target": "ES2015",                       /* ECMAScript target version */
@@ -20,6 +19,6 @@
     "rootDir": "./src"
     
   },
-  "include": ["src"]
+  "include": ["src/**/*"]
   
 }
