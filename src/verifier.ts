@@ -62,13 +62,16 @@ export function createVerifier(preloadedDidDocuments: DIDDocument[]) {
     // During verification, the public key is fetched via documentLoader,
     // so no key is necessary when creating the suite
     const suite = new Ed25519Signature2020();
-
-    let valid = await vc.verify({
+    const toVerify: any = {
       presentation: { ...verifiablePresentation },
       documentLoader: customLoader,
-      suite: suite,
-      challenge: 'test123' // options.challenge!,
-    });
+      suite: suite
+    };
+    if (options && options!.challenge) {
+      toVerify['challenge'] = options!.challenge;
+    }
+
+    let valid = await vc.verify(toVerify);
     return valid;
   }
 
