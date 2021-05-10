@@ -5,7 +5,7 @@ import 'mocha';
 import { createVerifier } from './verifier';
 
 const identifer = 'did:web:digitalcredentials.github.io#z6MkrXSQTybtqyMasfSxeRBJxDvDUGqb7mt9fFVXkVn6xTG7';
-const challenge = '123';
+const challenge = 'test123';
 const simpleCredentialSigned = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
@@ -131,6 +131,5 @@ describe('Verifier test',
       const verificationResult = await verifier.verifyPresentation(verifiablePresentation, options);
       expect(verificationResult.verified).to.equal(true);
     }).slow(5000).timeout(10000);
-
 
   });
