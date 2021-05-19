@@ -2,12 +2,12 @@
 import { contexts as ldContexts, documentLoaderFactory } from '@transmute/jsonld-document-loader';
 import DccContextV1 from "./contexts/dcc-v1.json";
 import { DIDDocument } from "./types";
-import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
+import { Ed25519VerificationKey2020 } from '@digitalcredentials/ed25519-verification-key-2020';
 
-const didContext = require('did-context');
+const didContext = require('@digitalcredentials/did-context');
 const ed25519 = require('ed25519-signature-2020-context');
 const DccContextV1Url = "https://w3id.org/dcc/v1";
-const x25519Ctx = require('x25519-key-agreement-2020-context');
+const x25519Ctx = require('@digitalcredentials/x25519-key-agreement-2020-context');
 
 export function getController(fullDid: string) {
   return fullDid.split('#')[0];
