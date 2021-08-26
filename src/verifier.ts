@@ -1,4 +1,4 @@
-import * as axios from axios;
+import axios from 'axios';
 import { DIDDocument } from "./types"
 import { SignatureOptions } from "./signatures";
 import { getCustomLoader, addDidDocuments, getPreloadedAssertionMethods } from "./common"
@@ -42,7 +42,10 @@ export function createVerifier(preloadedDidDocuments: DIDDocument[]) {
   };
 
   async function validate(verifiableCredential: any): Promise<any> {
-    const issuerRegistry = JSON.parse((await axios.get(ISSUER_REGISTRY_URL)).data.registry);
+    const issuerRegistry = (await axios.get(ISSUER_REGISTRY_URL)).data.registry;
+    if (typeof verifiableCredential.issuer === 'object') {
+      return issuerRegistry.hasOwnProperty(verifiableCredential.issuer.id);
+    }
     return issuerRegistry.hasOwnProperty(verifiableCredential.issuer);
   }
 
