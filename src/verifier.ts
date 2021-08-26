@@ -1,3 +1,4 @@
+import * as axios from axios;
 import { DIDDocument } from "./types"
 import { SignatureOptions } from "./signatures";
 import { getCustomLoader, addDidDocuments, getPreloadedAssertionMethods } from "./common"
@@ -5,6 +6,7 @@ import { Ed25519Signature2020 } from '@digitalcredentials/ed25519-signature-2020
 
 const vc = require('@digitalcredentials/vc');
 const didKey = require('@digitalcredentials/did-method-key');
+const ISSUER_REGISTRY_URL = 'https://digitalcredentials.github.io/issuer-registry/registry.json';
 
 export function createVerifier(preloadedDidDocuments: DIDDocument[]) {
   const didKeyDriver = didKey.driver();
@@ -39,18 +41,24 @@ export function createVerifier(preloadedDidDocuments: DIDDocument[]) {
     return transmuteLoader(url);
   };
 
+  async function validate(verifiableCredential: any): Promise<any> {
+    const issuerRegistry = JSON.parse((await axios.get(ISSUER_REGISTRY_URL)).data.registry);
+    return issuerRegistry.hasOwnProperty(verifiableCredential.issuer);
+  }
+
   async function verify(verifiableCredential: any, options?: SignatureOptions): Promise<any> {
     // During verification, the public key is fetched via documentLoader,
     // so no key is necessary when creating the suite
     const suite = new Ed25519Signature2020();
 
     try {
-      const valid = await vc.verifyCredential({
+      const verified = await vc.verifyCredential({
         credential: verifiableCredential,
         documentLoader: customLoader,
         suite
       });
-      return valid;
+      const valid = await validate(verifiableCredential);
+      return verified && valid;
     }
     catch (e) {
       console.error(e);
@@ -77,6 +85,7 @@ export function createVerifier(preloadedDidDocuments: DIDDocument[]) {
 
   return {
     verify,
-    verifyPresentation
+    verifyPresentation,
+    validate
   }
 }

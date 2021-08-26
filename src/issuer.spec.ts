@@ -99,6 +99,4 @@ describe('Issuer test',
       const vmResult = getProofProperty(result.proof, 'verificationMethod');
       expect(vmResult).to.equal(identifer);
     }).slow(5000).timeout(10000);
-
-
   });
