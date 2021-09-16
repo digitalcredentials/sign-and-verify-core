@@ -14,6 +14,73 @@ yarn add @digitalcredentials/sign-and-verify-core
 
 and then use that issuer...
 
+## Generating a new key pair
+
+You can use the sample keypair that comes with sign-and-verify ([unlockedDID](data/unlocked-did:web:digitalcredentials.github.io.json)), but eventually you'll want to generate your own key pair, which you can do thusly:
+
+```js
+const {Ed25519VerificationKey2020} = require('@digitalbazaar/ed25519-verification-key-2020');
+const generate = async function() {
+    const edKeyPair = await Ed25519VerificationKey2020.generate({controller: 'did:web:credentials.mcmaster.ca'})
+    const keys = await edKeyPair.export({publicKey: true, privateKey: true});
+    console.log(JSON.stringify(keys, null, 2))
+}
+generate()
+```
+
+You can run this on the command line in an npm package with the @digitalbazaar/ed25519-verification-key-2020 library installed.
+
+This produces a key pair, which should look something like this:
+
+```
+{
+  id: 'did:web:credentials.mcmaster.ca#z6MkfcpjR3X7xJja2atED1E6meTTUjjTmKf7E2Kq2JFHK1Xp',
+  type: 'Ed25519VerificationKey2020',
+  controller: 'did:web:credentials.mcmaster.ca',
+  publicKeyMultibase: 'z6MkfcpjR3X7xJja2atED1E6meTTUjjTmKf7E2Kq2JFHK1Xp',
+  privateKeyMultibase: 'zruzggrR7q9cHFrzVmk7kHvDwo9vdtCQtXoUebGBDYYz3A6CdnLub4CYYMaKLB6X6LQTCix7m2tEJbYbUWjTN5yX8ZY'
+}
+```
+
+Put it into the DID document to get something like this:
+
+```json
+{
+	"@context": [
+		"https://www.w3.org/ns/did/v1",
+		"https://w3id.org/security/suites/ed25519-2020/v1"
+	],
+	"id": "did:web:digitalcredentials.mcmaster.ca",
+	"assertionMethod": [{
+  		"id": "did:web:credentials.mcmaster.ca#z6MkfcpjR3X7xJja2atED1E6meTTUjjTmKf7E2Kq2JFHK1Xp",
+  		"type": "Ed25519VerificationKey2020",
+  		"controller": "did:web:credentials.mcmaster.ca",
+  		"publicKeyMultibase": "z6MkfcpjR3X7xJja2atED1E6meTTUjjTmKf7E2Kq2JFHK1Xp",
+  		"privateKeyMultibase": "zruzggrR7q9cHFrzVmk7kHvDwo9vdtCQtXoUebGBDYYz3A6CdnLub4CYYMaKLB6X6LQTCix7m2tEJbYbUWjTN5yX8ZY"
+	}]
+}
+```
+
+Save this somewhere.  The Examples section explains how to use it.
+
+NOTE:  IMPORTANT!  IMPORTANT! This DID Document contains the private key and so should NEVER be posted publicly (and should be kept secure as appropriate for your security requirements.)  This so-called 'unlocked' DID Document is only meant to be used locally with this library (because the library needs the private key to sign with). If you do end up wanting to post the DID publicly (like at the DID:WEB .well-known URI, e.g., http://credentials.mcmaster.ca/.well-known/did.json), first remove the private key, and post the rest:
+
+```json
+{
+	"@context": [
+		"https://www.w3.org/ns/did/v1",
+		"https://w3id.org/security/suites/ed25519-2020/v1"
+	],
+	"id": "did:web:digitalcredentials.mcmaster.ca",
+	"assertionMethod": [{
+  		"id": "did:web:credentials.mcmaster.ca#z6MkfcpjR3X7xJja2atED1E6meTTUjjTmKf7E2Kq2JFHK1Xp",
+  		"type": "Ed25519VerificationKey2020",
+  		"controller": "did:web:credentials.mcmaster.ca",
+  		"publicKeyMultibase": "z6MkfcpjR3X7xJja2atED1E6meTTUjjTmKf7E2Kq2JFHK1Xp"
+	}]
+}
+```
+
 ## Examples
 
 You can see a lot of this in [tests](src/issuer.spec.ts) - we just reproduce/re-organize it here to make it easier to understand if you are new to javascript, or to testing, or really just want to see the important parts without distractions. 
@@ -22,7 +89,7 @@ NOTE:  where we say 'presentation', we mean a [Verifiable Presentation](https://
 
 NOTE:  where we say 'credential', we mean a [Verifiable Credential](https://www.w3.org/TR/vc-data-model/#credentials)
 
-You'll need an unlocked DID document (like this one: [unlockedDID](data/unlocked-did:web:digitalcredentials.github.io.json)) with which to sign.
+You'll need an unlocked DID document with which to sign (like this one: [unlockedDID](data/unlocked-did:web:digitalcredentials.github.io.json) or generate your own as explained above).
 
 ```js
 import {createIssuer} from sign-and-verify-core;
