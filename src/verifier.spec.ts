@@ -1,9 +1,10 @@
 import { readFileSync } from 'fs';
 import { expect } from 'chai';
+import { createSandbox } from 'sinon';
 import 'mocha';
+import * as Verifier from './verifier';
 
-import { createVerifier } from './verifier';
-
+const sandbox = createSandbox();
 const identifer = 'did:web:digitalcredentials.github.io#z6MkrXSQTybtqyMasfSxeRBJxDvDUGqb7mt9fFVXkVn6xTG7';
 const challenge = 'test123';
 const simpleCredentialSigned = {
@@ -101,35 +102,53 @@ const verifiablePresentation = {
 };
 
 const preloadedDidDocument = JSON.parse(readFileSync("data/public-did:web:digitalcredentials.github.io.json").toString("ascii"));
-const verifier = createVerifier([preloadedDidDocument]);
+const verifier = Verifier.createVerifier([preloadedDidDocument]);
 
-describe('Verifier test',
-  () => {
+const configureTestSuite = (valid: boolean) => {
+  const modifier = valid ? ' ' : ' not ';
 
-    it('should verify', async () => {
+  describe('Valid DCC Issuer', () => {
+    before(() => {
+      // This line ensures that the issuer is accepted
+      // as a valid DCC member for testing purposes
+      sandbox.stub(Verifier, 'validate').resolves(valid);
+    });
+
+    after(() => {
+      // This line restores the stubs (e.g., validate)
+      // function for subsequent test suites
+      sandbox.restore();
+    });
+
+    it(`should${modifier}verify`, async () => {
       const options = {
         'verificationMethod': identifer
       };
-
       const verificationResult = await verifier.verify(simpleCredentialSigned, options);
-      expect(verificationResult.verified).to.equal(true);
+      expect(verificationResult.verified).to.equal(valid);
     }).slow(5000).timeout(10000);
 
-    it('should verify with DCC context', async () => {
+    it(`should${modifier}verify with DCC context`, async () => {
       const options = {
         'verificationMethod': identifer
       };
-
       const verificationResult = await verifier.verify(dccCredentialSigned, options);
-      expect(verificationResult.verified).to.equal(true);
+      expect(verificationResult.verified).to.equal(valid);
     }).slow(5000).timeout(10000);
 
-    it('should verify presentation', async () => {
+    it(`should${modifier}verify presentation`, async () => {
       const options = {
         'challenge': challenge,
       };
       const verificationResult = await verifier.verifyPresentation(verifiablePresentation, options);
       expect(verificationResult.verified).to.equal(true);
     }).slow(5000).timeout(10000);
-
   });
+};
+
+describe('Verifier Test',
+  () => {
+    configureTestSuite(true);
+    configureTestSuite(false);
+  }
+);
