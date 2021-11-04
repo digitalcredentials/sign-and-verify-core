@@ -8,7 +8,18 @@ const vc = require('@digitalcredentials/vc');
 const didKey = require('@digitalcredentials/did-method-key');
 const ISSUER_REGISTRY_URL = 'https://digitalcredentials.github.io/issuer-registry/registry.json';
 
-export function createVerifier(preloadedDidDocuments: DIDDocument[]) {
+// NOTE: This method is a simple and common issuer validation
+// You may modify this method to suit the validation needs
+// of your organization
+export const validate = async (verifiableCredential: any): Promise<boolean> => {
+  const issuerRegistry = (await axios.get(ISSUER_REGISTRY_URL)).data.registry;
+  if (typeof verifiableCredential.issuer === 'object') {
+    return issuerRegistry.hasOwnProperty(verifiableCredential.issuer.id);
+  }
+  return issuerRegistry.hasOwnProperty(verifiableCredential.issuer);
+};
+
+export const createVerifier = (preloadedDidDocuments: DIDDocument[]) => {
   const didKeyDriver = didKey.driver();
 
   let customLoaderProto = getCustomLoader();
@@ -41,27 +52,19 @@ export function createVerifier(preloadedDidDocuments: DIDDocument[]) {
     return transmuteLoader(url);
   };
 
-  async function validate(verifiableCredential: any): Promise<any> {
-    const issuerRegistry = (await axios.get(ISSUER_REGISTRY_URL)).data.registry;
-    if (typeof verifiableCredential.issuer === 'object') {
-      return issuerRegistry.hasOwnProperty(verifiableCredential.issuer.id);
-    }
-    return issuerRegistry.hasOwnProperty(verifiableCredential.issuer);
-  }
-
   async function verify(verifiableCredential: any, options?: SignatureOptions): Promise<any> {
     // During verification, the public key is fetched via documentLoader,
     // so no key is necessary when creating the suite
     const suite = new Ed25519Signature2020();
 
     try {
-      const verified = await vc.verifyCredential({
+      const result = await vc.verifyCredential({
         credential: verifiableCredential,
         documentLoader: customLoader,
         suite
       });
       const valid = await validate(verifiableCredential);
-      return verified && valid;
+      return { ...result, verified: result.verified && valid };
     }
     catch (e) {
       console.error(e);
@@ -88,7 +91,6 @@ export function createVerifier(preloadedDidDocuments: DIDDocument[]) {
 
   return {
     verify,
-    verifyPresentation,
-    validate
+    verifyPresentation
   }
-}
+};
