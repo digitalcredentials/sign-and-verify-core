@@ -104,14 +104,16 @@ const verifiablePresentation = {
 const preloadedDidDocument = JSON.parse(readFileSync("data/public-did:web:digitalcredentials.github.io.json").toString("ascii"));
 const verifier = Verifier.createVerifier([preloadedDidDocument]);
 
-const configureTestSuite = (valid: boolean) => {
-  const modifier = valid ? ' ' : ' not ';
+const configureTestSuite = (success: boolean) => {
+  const describeModifier = success ? 'Valid' : 'Invalid';
+  const itModifier = success ? ' ' : ' not ';
 
-  describe('Valid DCC Issuer', () => {
+  describe(`${describeModifier} DCC Issuer`, () => {
     before(() => {
       // This line ensures that the issuer is accepted
       // as a valid DCC member for testing purposes
-      sandbox.stub(Verifier, 'validate').resolves(valid);
+      sandbox.stub(Verifier, 'validateCredential').resolves(success);
+      sandbox.stub(Verifier, 'validatePresentation').resolves(success);
     });
 
     after(() => {
@@ -120,28 +122,40 @@ const configureTestSuite = (valid: boolean) => {
       sandbox.restore();
     });
 
-    it(`should${modifier}verify`, async () => {
+    it(`should${itModifier}verify`, async () => {
       const options = {
         'verificationMethod': identifer
       };
-      const verificationResult = await verifier.verify(simpleCredentialSigned, options);
-      expect(verificationResult.verified).to.equal(valid);
+      const verificationResult = await verifier.verify({
+        verifiableCredential: simpleCredentialSigned,
+        issuerRegistry: {},
+        options
+      });
+      expect(verificationResult.verified && verificationResult.valid).to.equal(success);
     }).slow(5000).timeout(10000);
 
-    it(`should${modifier}verify with DCC context`, async () => {
+    it(`should${itModifier}verify with DCC context`, async () => {
       const options = {
         'verificationMethod': identifer
       };
-      const verificationResult = await verifier.verify(dccCredentialSigned, options);
-      expect(verificationResult.verified).to.equal(valid);
+      const verificationResult = await verifier.verify({
+        verifiableCredential: dccCredentialSigned,
+        issuerRegistry: {},
+        options
+      });
+      expect(verificationResult.verified && verificationResult.valid).to.equal(success);
     }).slow(5000).timeout(10000);
 
-    it(`should${modifier}verify presentation`, async () => {
+    it(`should${itModifier}verify presentation`, async () => {
       const options = {
         'challenge': challenge,
       };
-      const verificationResult = await verifier.verifyPresentation(verifiablePresentation, options);
-      expect(verificationResult.verified).to.equal(true);
+      const verificationResult = await verifier.verifyPresentation({
+        verifiablePresentation,
+        issuerRegistry: {},
+        options
+      });
+      expect(verificationResult.verified && verificationResult.valid).to.equal(success);
     }).slow(5000).timeout(10000);
   });
 };
