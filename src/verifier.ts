@@ -9,13 +9,13 @@ const didKey = require('@digitalcredentials/did-method-key');
 interface VerifyCredentialParameters {
   verifiableCredential: any;
   issuerRegistry: any;
-  options: SignatureOptions;
+  options?: SignatureOptions;
 }
 
 interface VerifyPresentationParameters {
   verifiablePresentation: any;
   issuerRegistry: any;
-  options: SignatureOptions;
+  options?: SignatureOptions;
 }
 
 // NOTE: This method is a simple and common issuer validation
