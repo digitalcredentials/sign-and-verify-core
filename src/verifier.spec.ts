@@ -128,7 +128,7 @@ const configureTestSuite = (success: boolean) => {
       };
       const verificationResult = await verifier.verify({
         verifiableCredential: simpleCredentialSigned,
-        issuerRegistry: {},
+        issuerMembershipRegistry: {},
         options
       });
       expect(verificationResult.verified && verificationResult.valid).to.equal(success);
@@ -140,7 +140,7 @@ const configureTestSuite = (success: boolean) => {
       };
       const verificationResult = await verifier.verify({
         verifiableCredential: dccCredentialSigned,
-        issuerRegistry: {},
+        issuerMembershipRegistry: {},
         options
       });
       expect(verificationResult.verified && verificationResult.valid).to.equal(success);
@@ -152,7 +152,7 @@ const configureTestSuite = (success: boolean) => {
       };
       const verificationResult = await verifier.verifyPresentation({
         verifiablePresentation,
-        issuerRegistry: {},
+        issuerMembershipRegistry: {},
         options
       });
       expect(verificationResult.verified && verificationResult.valid).to.equal(success);
