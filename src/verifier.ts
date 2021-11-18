@@ -29,6 +29,10 @@ export const validateCredential = async (verifiableCredential: any, issuerMember
 };
 
 export const validatePresentation = async (verifiablePresentation: any, issuerMembershipRegistry: any): Promise<boolean> => {
+  if (!verifiablePresentation.verifiableCredential) {
+    // presentation may omit credential
+    return true;
+  }
   if (Array.isArray(verifiablePresentation.verifiableCredential)) {
     return verifiablePresentation.verifiableCredential.every((credential: any) => {
       return validateCredential(credential, issuerMembershipRegistry);
