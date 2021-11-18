@@ -28,12 +28,15 @@
     "image": { "@id": "schema:image", "@type": "@id" },
 
     "awardedOnCompletionOf": { "@reverse": "schema:educationalCredentialAwarded" },
-
+    "competencyRequired": "schema:EducationalOccupationalCredential#competencyRequired",
+    "credentialCategory": "schema:EducationalOccupationalCredential#credentialCategory",
     "hasCredential": "schema:hasCredential",
+    "assertion": "dcc:assertion",
     "Issuer": "obi:Issuer",
 
     "ProgramCompletionCredential": "dcc:ProgramCompletionCredential",
     "CourseCompletionCredential": "dcc:CourseCompletionCredential",
-    "LearningCredential": "dcc:LearningCredential"
+    "LearningCredential": "dcc:LearningCredential",
+    "Assertion": "dcc:Assertion"
   }
 }
