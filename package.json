@@ -13,6 +13,7 @@
     "coverage": "nyc mocha -r ts-node/register --require source-map-support/register src/**/*.spec.ts",
     "test": "TS_NODE_PROJECT='./tsconfig-cjs.json' mocha -r ts-node/register src/**/*.spec.ts",
     "build": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "prepare": "npm run build",
     "prepublishOnly": "npm run build"
   },
   "keywords": [],
