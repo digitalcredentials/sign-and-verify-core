@@ -8,33 +8,33 @@ const didKey = require('@digitalcredentials/did-method-key');
 
 interface VerifyCredentialParameters {
   verifiableCredential: any;
-  issuerRegistry: any;
+  issuerMembershipRegistry: any;
   options?: SignatureOptions;
 }
 
 interface VerifyPresentationParameters {
   verifiablePresentation: any;
-  issuerRegistry: any;
+  issuerMembershipRegistry: any;
   options?: SignatureOptions;
 }
 
 // NOTE: This method is a simple and common issuer validation
 // You may modify this method to suit the validation needs
 // of your organization
-export const validateCredential = async (verifiableCredential: any, issuerRegistry: any): Promise<boolean> => {
+export const validateCredential = async (verifiableCredential: any, issuerMembershipRegistry: any): Promise<boolean> => {
   if (typeof verifiableCredential.issuer === 'object') {
-    return issuerRegistry.hasOwnProperty(verifiableCredential.issuer.id);
+    return issuerMembershipRegistry.hasOwnProperty(verifiableCredential.issuer.id);
   }
-  return issuerRegistry.hasOwnProperty(verifiableCredential.issuer);
+  return issuerMembershipRegistry.hasOwnProperty(verifiableCredential.issuer);
 };
 
-export const validatePresentation = async (verifiablePresentation: any, issuerRegistry: any): Promise<boolean> => {
+export const validatePresentation = async (verifiablePresentation: any, issuerMembershipRegistry: any): Promise<boolean> => {
   if (Array.isArray(verifiablePresentation.verifiableCredential)) {
     return verifiablePresentation.verifiableCredential.every((credential: any) => {
-      return validateCredential(credential, issuerRegistry);
+      return validateCredential(credential, issuerMembershipRegistry);
     });
   }
-  return validateCredential(verifiablePresentation.verifiableCredential, issuerRegistry);
+  return validateCredential(verifiablePresentation.verifiableCredential, issuerMembershipRegistry);
 };
 
 export const createVerifier = (preloadedDidDocuments: DIDDocument[]) => {
@@ -72,7 +72,7 @@ export const createVerifier = (preloadedDidDocuments: DIDDocument[]) => {
 
   async function verify({
     verifiableCredential,
-    issuerRegistry,
+    issuerMembershipRegistry,
     options
   }: VerifyCredentialParameters): Promise<any> {
     // During verification, the public key is fetched via documentLoader,
@@ -86,7 +86,7 @@ export const createVerifier = (preloadedDidDocuments: DIDDocument[]) => {
         suite
       });
       const verified = result.verified;
-      const valid = await validateCredential(verifiableCredential, issuerRegistry);
+      const valid = await validateCredential(verifiableCredential, issuerMembershipRegistry);
       return { ...result, verified, valid };
     }
     catch (e) {
@@ -97,7 +97,7 @@ export const createVerifier = (preloadedDidDocuments: DIDDocument[]) => {
 
   async function verifyPresentation({
     verifiablePresentation,
-    issuerRegistry,
+    issuerMembershipRegistry,
     options
   }: VerifyPresentationParameters): Promise<any> {
     // During verification, the public key is fetched via documentLoader,
@@ -114,7 +114,7 @@ export const createVerifier = (preloadedDidDocuments: DIDDocument[]) => {
 
     const result = await vc.verify(toVerify);
     const verified = result.verified;
-    const valid = await validatePresentation(verifiablePresentation, issuerRegistry);
+    const valid = await validatePresentation(verifiablePresentation, issuerMembershipRegistry);
     return { ...result, verified, valid };
   }
 
