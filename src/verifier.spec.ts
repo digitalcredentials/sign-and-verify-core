@@ -4,9 +4,13 @@ import { createSandbox } from 'sinon';
 import 'mocha';
 import * as Verifier from './verifier';
 
-const sandbox = createSandbox();
-const identifer = 'did:web:digitalcredentials.github.io#z6MkrXSQTybtqyMasfSxeRBJxDvDUGqb7mt9fFVXkVn6xTG7';
+import { createVerifier } from './verifier';
+
+const fragment = 'z6MkhVTX9BF3NGYX6cc7jWpbNnR7cAjH8LUffabZP8Qu4ysC'
+const controller = `did:key:${fragment}`;
+const identifer = `${controller}#${fragment}`;
 const challenge = 'test123';
+
 const simpleCredentialSigned = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
@@ -16,17 +20,17 @@ const simpleCredentialSigned = {
   "type": [
     "VerifiableCredential"
   ],
-  "issuer": "did:web:digitalcredentials.github.io",
+  "issuer": controller,
   "issuanceDate": "2020-03-10T04:24:12.164Z",
   "credentialSubject": {
     "id": "did:example:abcdef"
   },
   "proof": {
     "type": "Ed25519Signature2020",
-    "created": "2021-05-04T18:59:42Z",
-    "verificationMethod": "did:web:digitalcredentials.github.io#z6MkrXSQTybtqyMasfSxeRBJxDvDUGqb7mt9fFVXkVn6xTG7",
+    "created": "2021-11-19T03:51:48Z",
+    "verificationMethod": identifer,
     "proofPurpose": "assertionMethod",
-    "proofValue": "z4jnMia8Q1EDAQDNnurAnQgNmc1PmhrXx87j6zr9rjvrpGqSFxcHqJf55HjQPJm7Qj712KU3DXpNF1N6gYh77k9M3"
+    "proofValue": "z4d46VVjBYrZjb1ZrCmLRTR5sYncneqwZpan7MgAs46GbraPMjHLNXen5ocMBLnXd7RwCCHDmZiQkEkqPbJH2HFFU"
   }
 }
 
@@ -43,7 +47,7 @@ const dccCredentialSigned = {
   ],
   "issuer": {
     "type": "Issuer",
-    "id": "did:web:digitalcredentials.github.io",
+    "id": controller,
     "name": "Sample Issuer",
     "url": "https://digitalcredentials.github.io/samples/"
   },
@@ -74,10 +78,10 @@ const dccCredentialSigned = {
   },
   "proof": {
     "type": "Ed25519Signature2020",
-    "created": "2021-05-04T18:59:42Z",
-    "verificationMethod": "did:web:digitalcredentials.github.io#z6MkrXSQTybtqyMasfSxeRBJxDvDUGqb7mt9fFVXkVn6xTG7",
+    "created": "2021-11-19T03:56:52Z",
+    "verificationMethod": identifer,
     "proofPurpose": "assertionMethod",
-    "proofValue": "z5TL5WVEHoh4NAyooyreDpgGYRhGymDzvZMXEynMpNVCtAupMV7N8WJVzmjSUHFe71T6FZqVZxexA8iVtD7PLL8f4"
+    "proofValue": "z5d8X8cNcwPLp7Nx5VygqxrLf47e7w5BAToYWngsWfWbzjZ1gpervxcn2A8ML3j1aFV9LPEeSbxwL5dJB3HpCFKFF"
   }
 }
 
@@ -101,12 +105,8 @@ const verifiablePresentation = {
   }
 };
 
-const preloadedDidDocument = JSON.parse(readFileSync("data/public-did:web:digitalcredentials.github.io.json").toString("ascii"));
-const verifier = Verifier.createVerifier([preloadedDidDocument]);
-
-const configureTestSuite = (success: boolean) => {
-  const describeModifier = success ? 'Valid' : 'Invalid';
-  const itModifier = success ? ' ' : ' not ';
+const preloadedDidDocument = JSON.parse(readFileSync("data/public-did:key.json").toString("ascii"));
+const verifier = createVerifier([preloadedDidDocument]);
 
   describe(`${describeModifier} DCC Issuer`, () => {
     before(() => {
