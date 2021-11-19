@@ -16,7 +16,7 @@ and then use that issuer...
 
 ## Generating a new key pair
 
-You can use the sample keypair that comes with sign-and-verify ([unlockedDID](data/unlocked-did:web:digitalcredentials.github.io.json)), but eventually you'll want to generate your own key pair, which you can do thusly:
+You can use the sample keypair that comes with sign-and-verify ([unlockedDID](data/unlocked-did:key.json)), but eventually you'll want to generate your own key pair, which you can do thusly:
 
 ```js
 const {Ed25519VerificationKey2020} = require('@digitalbazaar/ed25519-verification-key-2020');
@@ -89,15 +89,15 @@ NOTE:  where we say 'presentation', we mean a [Verifiable Presentation](https://
 
 NOTE:  where we say 'credential', we mean a [Verifiable Credential](https://www.w3.org/TR/vc-data-model/#credentials)
 
-You'll need an unlocked DID document with which to sign (like this one: [unlockedDID](data/unlocked-did:web:digitalcredentials.github.io.json) or generate your own as explained above).
+You'll need an unlocked DID document with which to sign (like this one: [unlockedDID](data/unlocked-did:key.json) or generate your own as explained above).
 
 ```js
 import {createIssuer} from sign-and-verify-core;
 
 // Load your unlocked DID from wherever you like.  For example, from the file system (if say you copied 
-// data/unlocked-did:web:digitalcredentials.github.io.json from this repo to your project):
+// data/unlocked-did:key.json from this repo to your project):
 
-const unlockedDidDocument = JSON.parse(readFileSync("data/unlocked-did:web:digitalcredentials.github.io.json").toString("ascii"));
+const unlockedDidDocument = JSON.parse(readFileSync("data/unlocked-did:key.json").toString("ascii"));
 
 // create the issuer, passing in the unlocked DID document
 const { sign, requestDemoCredential, verify, signPresentation, createAndSignPresentation, verifyPresentation } = createIssuer(unlockedDidDocument)
@@ -179,7 +179,7 @@ const sampleSignedPresentation = {
 }
 
 // NOTE that the property passed in through credentialOptions is called the verificationMethod, 
-// but for this demo, which uses an [unlockedDID](data/unlocked-did:web:digitalcredentials.github.io.json) 
+// but for this demo, which uses an [unlockedDID](data/unlocked-did:key.json) 
 // it also identifies the signing key with which to sign credentials, I think just because the 
 // the private key is packaged in together with the public key
 const credentialOptions = {

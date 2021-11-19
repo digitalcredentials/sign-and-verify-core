@@ -3,8 +3,9 @@ import 'mocha';
 
 import { getController } from './common';
 
-const identifer = 'did:web:digitalcredentials.github.io#z6MkrXSQTybtqyMasfSxeRBJxDvDUGqb7mt9fFVXkVn6xTG7';
-const controller = 'did:web:digitalcredentials.github.io';
+const fragment = 'z6MkhVTX9BF3NGYX6cc7jWpbNnR7cAjH8LUffabZP8Qu4ysC'
+const controller = `did:key:${fragment}`;
+const identifer = `${controller}#${fragment}`;
 
 describe('Common test',
   () => {
