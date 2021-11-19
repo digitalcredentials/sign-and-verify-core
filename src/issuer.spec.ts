@@ -5,10 +5,12 @@ import 'mocha';
 import { createIssuer } from './issuer';
 import { getProofProperty } from './signatures';
 
-const identifer = 'did:web:digitalcredentials.github.io#z6MkrXSQTybtqyMasfSxeRBJxDvDUGqb7mt9fFVXkVn6xTG7';
-const controller = 'did:web:digitalcredentials.github.io';
+const fragment = 'z6MkhVTX9BF3NGYX6cc7jWpbNnR7cAjH8LUffabZP8Qu4ysC'
+const controller = `did:key:${fragment}`;
+const identifer = `${controller}#${fragment}`;
 const challenge = '123';
 const presentationId = '456'
+
 const simpleCredential = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1"
@@ -17,7 +19,7 @@ const simpleCredential = {
   "type": [
     "VerifiableCredential"
   ],
-  "issuer": "did:web:digitalcredentials.github.io",
+  "issuer": controller,
   "issuanceDate": "2020-03-10T04:24:12.164Z",
   "credentialSubject": {
     "id": "did:example:abcdef"
@@ -34,7 +36,7 @@ const dccCredential =
   'type': ['VerifiableCredential', 'LearningCredential'],
   'issuer': {
     'type': 'Issuer',
-    'id': 'did:web:digitalcredentials.github.io',
+    'id': controller,
     'name': 'Sample Issuer',
     'url': 'https://digitalcredentials.github.io/samples/'
   },
@@ -62,7 +64,7 @@ const dccCredential =
   }
 }
 
-const unlockedDidDocument = JSON.parse(readFileSync("data/unlocked-did:web:digitalcredentials.github.io.json").toString("ascii"));
+const unlockedDidDocument = JSON.parse(readFileSync("data/unlocked-did:key.json").toString("ascii"));
 const issuer = createIssuer([unlockedDidDocument], identifer);
 
 describe('Issuer test',
