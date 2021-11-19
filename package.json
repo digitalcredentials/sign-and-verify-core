@@ -19,7 +19,7 @@
   "license": "MIT",
   "repository": "git@github.com:digitalcredentials/sign-and-verify-core.git",
   "dependencies": {
-    "did-context": "^3.1.1",
+    "@digitalcredentials/did-context": "^3.1.1",
     "@digitalcredentials/did-method-key": "^2.0.2",
     "@digitalcredentials/did-web-resolver": "^1.0.0",
     "@digitalcredentials/ed25519-signature-2020": "^3.0.2",
