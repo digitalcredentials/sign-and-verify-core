@@ -6,6 +6,8 @@ import * as Verifier from './verifier';
 
 import { createVerifier } from './verifier';
 
+const sandbox = createSandbox();
+
 const fragment = 'z6MkhVTX9BF3NGYX6cc7jWpbNnR7cAjH8LUffabZP8Qu4ysC'
 const controller = `did:key:${fragment}`;
 const identifer = `${controller}#${fragment}`;
@@ -107,6 +109,10 @@ const verifiablePresentation = {
 
 const preloadedDidDocument = JSON.parse(readFileSync("data/public-did:key.json").toString("ascii"));
 const verifier = createVerifier([preloadedDidDocument]);
+
+const configureTestSuite = (success: boolean) => {
+  const describeModifier = success ? 'Valid' : 'Invalid';
+  const itModifier = success ? ' ' : ' not ';
 
   describe(`${describeModifier} DCC Issuer`, () => {
     before(() => {
