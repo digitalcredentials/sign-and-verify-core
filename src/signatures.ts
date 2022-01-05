@@ -24,7 +24,7 @@ export function getSigningDate(options: SignatureOptions): string {
 };
 
 export function getProofProperty(vpProof: any, property: string): any {
-  let propValue = null;
+  let propValue: any = null;
   if (vpProof.hasOwnProperty(property)) {
     propValue = vpProof[property];
   } else if (vpProof.hasOwnProperty(`${SecurityPrefix}#${property}`)) {
