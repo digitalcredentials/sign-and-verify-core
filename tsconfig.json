@@ -11,6 +11,7 @@
     "sourceMap": true,                        /* Generate corresponding '.map' files. */
     "outDir": "./dist/esm",                   /* Output directory for our ESM module. */
     "strict": true,                           /* Enable all strict type-checking options. */
+    "noImplicitAny": false,                   /* Raise error on expressions and declarations with an implied 'any' type. */
     "esModuleInterop": true,                  /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
     "skipLibCheck": true,                     /* Skip type checking of declaration files. */
     "forceConsistentCasingInFileNames": true,  /* Disallow inconsistently-cased references to the same file. */
