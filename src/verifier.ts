@@ -2,9 +2,12 @@ import { DIDDocument } from "./types"
 import { SignatureOptions } from "./signatures";
 import { getCustomLoader, addDidDocuments, getPreloadedAssertionMethods } from "./common"
 import { Ed25519Signature2020 } from '@digitalcredentials/ed25519-signature-2020';
-
-const vc = require('@digitalcredentials/vc');
-const didKey = require('@digitalcredentials/did-method-key');
+import { Ed25519VerificationKey2020 } from '@digitalcredentials/ed25519-verification-key-2020';
+import { X25519KeyAgreementKey2020 } from '@digitalcredentials/x25519-key-agreement-key-2020';
+import { CryptoLD } from 'crypto-ld';
+import * as vc from '@digitalcredentials/vc';
+import * as didWeb from '@interop/did-web-resolver';
+import * as didKey from '@digitalcredentials/did-method-key';
 
 interface VerifyCredentialParameters {
   verifiableCredential: any;
@@ -42,6 +45,11 @@ export const validatePresentation = async (verifiablePresentation: any, issuerMe
 };
 
 export const createVerifier = (preloadedDidDocuments: DIDDocument[]) => {
+  const cryptoLd = new CryptoLD();
+  cryptoLd.use(Ed25519VerificationKey2020);
+  cryptoLd.use(X25519KeyAgreementKey2020);
+
+  const didWebDriver = didWeb.driver({ cryptoLd });
   const didKeyDriver = didKey.driver();
 
   let customLoaderProto = getCustomLoader();
@@ -50,6 +58,11 @@ export const createVerifier = (preloadedDidDocuments: DIDDocument[]) => {
       ['did:key:']: {
         resolve: async (_did: string) => {
           return didKeyDriver.get({ did: _did });
+        },
+      },
+      ['did:web:']: {
+        resolve: async (_did: string) => {
+          return didWebDriver.get({ did: _did });
         },
       },
     });
