@@ -55,14 +55,14 @@ export const createVerifier = (preloadedDidDocuments: DIDDocument[]) => {
   let customLoaderProto = getCustomLoader();
   customLoaderProto = addDidDocuments(customLoaderProto, preloadedDidDocuments);
   customLoaderProto.addResolver({
-      ['did:key:']: {
-        resolve: async (_did: string) => {
-          return didKeyDriver.get({ did: _did });
-        },
-      },
       ['did:web:']: {
         resolve: async (_did: string) => {
           return didWebDriver.get({ did: _did });
+        },
+      },
+      ['did:key:']: {
+        resolve: async (_did: string) => {
+          return didKeyDriver.get({ did: _did });
         },
       },
     });
