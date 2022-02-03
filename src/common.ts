@@ -1,6 +1,6 @@
 
 import { contexts as ldContexts, documentLoaderFactory } from '@transmute/jsonld-document-loader';
-import { CONTEXT_URL_V1, CONTEXT_V1 } from 'dcc-context';
+import { CONTEXT_URL_V1, CONTEXT_V1 } from '@digitalcredentials/dcc-context';
 import { DIDDocument } from "./types";
 import { Ed25519VerificationKey2020 } from '@digitalcredentials/ed25519-verification-key-2020';
 
