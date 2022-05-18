@@ -1,5 +1,5 @@
 import { contexts as ldContexts, documentLoaderFactory } from '@transmute/jsonld-document-loader';
-import dccCtx from '@digitalcredentials/dcc-context';
+import { CONTEXT_URL_V1 as SL_CONTEXT_URL_V1, CONTEXT_V1 as SL_CONTEXT_V1 } from '@digitalbazaar/vc-status-list-context';
 import { DIDDocument } from './types';
 import { Ed25519VerificationKey2020 } from '@digitalcredentials/ed25519-verification-key-2020';
 import obCtx from '@digitalcredentials/open-badges-context';
@@ -23,7 +23,7 @@ export function getCustomLoader() : any {
   })
   .addContext({ [ed25519.constants.CONTEXT_URL]: ed25519.contexts.get(ed25519.constants.CONTEXT_URL) })
   .addContext({ [didContext.constants.DID_CONTEXT_URL]: didContext.contexts.get(didContext.constants.DID_CONTEXT_URL) })
-  .addContext({ [dccCtx.CONTEXT_URL_V1]: dccCtx.CONTEXT_V1 })
+  .addContext({ [SL_CONTEXT_URL_V1]: SL_CONTEXT_V1 })
 
   // Open Badges v3 Context (with multiple URL aliases)
   .addContext({ [obCtx.CONTEXT_URL_V3]: obCtx.CONTEXT_V3 })
