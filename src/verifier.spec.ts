@@ -8,9 +8,8 @@ import { createVerifier } from './verifier';
 
 const sandbox = createSandbox();
 
-const fragment = 'z6MkhVTX9BF3NGYX6cc7jWpbNnR7cAjH8LUffabZP8Qu4ysC'
-const controller = `did:key:${fragment}`;
-const identifer = `${controller}#${fragment}`;
+const keyId = 'did:key:z6MkqanD5cmEVf154z5xExoxNKENAzVr3gdPo4wD2R2aCUzj#z6MkqanD5cmEVf154z5xExoxNKENAzVr3gdPo4wD2R2aCUzj';
+
 const challenge = 'test123';
 
 const simpleCredentialSigned = {
@@ -22,68 +21,58 @@ const simpleCredentialSigned = {
   "type": [
     "VerifiableCredential"
   ],
-  "issuer": controller,
+  "issuer": "did:key:z6MkqanD5cmEVf154z5xExoxNKENAzVr3gdPo4wD2R2aCUzj",
   "issuanceDate": "2020-03-10T04:24:12.164Z",
   "credentialSubject": {
     "id": "did:example:abcdef"
   },
   "proof": {
     "type": "Ed25519Signature2020",
-    "created": "2021-11-19T03:51:48Z",
-    "verificationMethod": identifer,
+    "created": "2022-05-25T16:31:36Z",
+    "verificationMethod": "did:key:z6MkqanD5cmEVf154z5xExoxNKENAzVr3gdPo4wD2R2aCUzj#z6MkqanD5cmEVf154z5xExoxNKENAzVr3gdPo4wD2R2aCUzj",
     "proofPurpose": "assertionMethod",
-    "proofValue": "z4d46VVjBYrZjb1ZrCmLRTR5sYncneqwZpan7MgAs46GbraPMjHLNXen5ocMBLnXd7RwCCHDmZiQkEkqPbJH2HFFU"
+    "proofValue": "z5BVEnYV8MdPSMAWEDuFnJ9ufnEjSuGkEKKqWyoZenUH6eNVaxbPLY2kqMp5amSgcRwymms6qboefqsNsvvvNggdZ"
   }
 }
+
 
 const dccCredentialSigned = {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://w3id.org/dcc/v1",
+    "https://w3c-ccg.github.io/vc-ed/plugfest-1-2022/jff-vc-edu-plugfest-1-context.json",
     "https://w3id.org/security/suites/ed25519-2020/v1"
   ],
-  "id": "https://digitalcredentials.github.io/samples/certificate/1fe91f0f-4c64-48c8-bfc8-7132f75776fe/",
   "type": [
     "VerifiableCredential",
-    "LearningCredential"
+    "OpenBadgeCredential"
   ],
   "issuer": {
-    "type": "Issuer",
-    "id": controller,
-    "name": "Sample Issuer",
-    "url": "https://digitalcredentials.github.io/samples/"
+    "type": "Profile",
+    "id": "did:key:z6MkqanD5cmEVf154z5xExoxNKENAzVr3gdPo4wD2R2aCUzj",
+    "name": "Jobs for the Future (JFF)",
+    "url": "https://www.jff.org/",
+    "image": "https://w3c-ccg.github.io/vc-ed/plugfest-1-2022/images/JFF_LogoLockup.png"
   },
-  "issuanceDate": "2021-01-19T18:22:34.772810+00:00",
+  "issuanceDate": "2022-05-01T00:00:00Z",
   "credentialSubject": {
-    "type": "Person",
-    "id": "did:example:456",
-    "name": "Percy",
-    "hasCredential": {
-      "type": [
-        "EducationalOccupationalCredential",
-        "ProgramCompletionCredential"
-      ],
-      "name": "DCC Sample Program Completion Credential",
-      "description": "<p>Learn stuff about requesting a DCC credential.</p>",
-      "awardedOnCompletionOf": {
-        "type": "EducationalOccupationalProgram",
-        "identifier": "program-v1:Sample",
-        "name": "Successful completion of sample request program",
-        "description": "<p>Learn stuff about DCC credential issuance</p>",
-        "numberOfCredits": {
-          "value": "1"
-        },
-        "startDate": "",
-        "endDate": ""
-      }
+    "type": "AchievementSubject",
+    "achievement": {
+      "type": "Achievement",
+      "name": "Sample test credential to prep for JFF Plugfest #1 2022",
+      "description": "This wallet can display this Open Badge 3.0",
+      "criteria": {
+        "type": "Criteria",
+        "narrative": "The first cohort of the JFF Plugfest 1 in May/June of 2022 collaborated to push interoperability of VCs in education forward."
+      },
+      "image": "https://w3c-ccg.github.io/vc-ed/plugfest-1-2022/images/plugfest-1-badge-image.png"
     }
   },
   "proof": {
     "type": "Ed25519Signature2020",
-    "created": "2021-11-19T03:56:52Z",
-    "verificationMethod": identifer,
+    "created": "2022-05-25T16:32:30Z",
+    "verificationMethod": "did:key:z6MkqanD5cmEVf154z5xExoxNKENAzVr3gdPo4wD2R2aCUzj#z6MkqanD5cmEVf154z5xExoxNKENAzVr3gdPo4wD2R2aCUzj",
     "proofPurpose": "assertionMethod",
-    "proofValue": "z5d8X8cNcwPLp7Nx5VygqxrLf47e7w5BAToYWngsWfWbzjZ1gpervxcn2A8ML3j1aFV9LPEeSbxwL5dJB3HpCFKFF"
+    "proofValue": "z2WLrRzdKpda4KkdDgKdLmwmAjUH1WCZKVUc14r8BdJv2pJe2BSaCBsQHctP4wFdTCikaxycjQXPjcfhHw7yhBW7C"
   }
 }
 
@@ -130,7 +119,7 @@ const configureTestSuite = (success: boolean) => {
 
     it(`should${itModifier}verify`, async () => {
       const options = {
-        'verificationMethod': identifer
+        'verificationMethod': keyId
       };
       const verificationResult = await verifier.verify({
         verifiableCredential: simpleCredentialSigned,
@@ -142,7 +131,7 @@ const configureTestSuite = (success: boolean) => {
 
     it(`should${itModifier}verify with DCC context`, async () => {
       const options = {
-        'verificationMethod': identifer
+        'verificationMethod': keyId
       };
       const verificationResult = await verifier.verify({
         verifiableCredential: dccCredentialSigned,

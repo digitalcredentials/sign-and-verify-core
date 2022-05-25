@@ -3,8 +3,7 @@ import { getCustomLoader, addDidDocuments, getPreloadedAssertionMethods } from '
 import { SignatureOptions, getSigningKeyIdentifier, getSigningDate } from './signatures';
 import { Ed25519VerificationKey2020 } from '@digitalcredentials/ed25519-verification-key-2020';
 import { Ed25519Signature2020 } from '@digitalcredentials/ed25519-signature-2020';
-
-const vc = require('@digitalcredentials/vc');
+import vc from '@digitalcredentials/vc';
 
 export function createIssuer(unlockedDIDDocuments: DIDDocument[], defaultSigningIdentifier?: string) {
   let customLoaderProto = getCustomLoader();

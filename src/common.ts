@@ -1,11 +1,12 @@
 import { contexts as ldContexts, documentLoaderFactory } from '@transmute/jsonld-document-loader';
-import { CONTEXT_URL_V1, CONTEXT_V1 } from '@digitalcredentials/dcc-context';
+import dccCtx from '@digitalcredentials/dcc-context';
 import { DIDDocument } from './types';
 import { Ed25519VerificationKey2020 } from '@digitalcredentials/ed25519-verification-key-2020';
+import obCtx from '@digitalcredentials/open-badges-context';
 
 const didContext = require('@digitalcredentials/did-context');
 const ed25519 = require('ed25519-signature-2020-context');
-const x25519Ctx = require('@digitalcredentials/x25519-key-agreement-2020-context');
+const x25519Ctx = require('x25519-key-agreement-2020-context');
 
 export function getController(fullDid: string) {
   return fullDid.split('#')[0];
@@ -22,8 +23,14 @@ export function getCustomLoader() : any {
   })
   .addContext({ [ed25519.constants.CONTEXT_URL]: ed25519.contexts.get(ed25519.constants.CONTEXT_URL) })
   .addContext({ [didContext.constants.DID_CONTEXT_URL]: didContext.contexts.get(didContext.constants.DID_CONTEXT_URL) })
-  .addContext({ [CONTEXT_URL_V1]: CONTEXT_V1 })
-  .addContext({ [x25519Ctx.constants.CONTEXT_URL]: x25519Ctx.contexts.get(x25519Ctx.constants.CONTEXT_URL) });
+  .addContext({ [dccCtx.CONTEXT_URL_V1]: dccCtx.CONTEXT_V1 })
+
+  // Open Badges v3 Context (with multiple URL aliases)
+  .addContext({ [obCtx.CONTEXT_URL_V3]: obCtx.CONTEXT_V3 })
+  .addContext({ [obCtx.constants.CONTEXT_URL_V3_JFF_V1]: obCtx.CONTEXT_V3 })
+  .addContext({ [obCtx.constants.CONTEXT_URL_V3_IMS]: obCtx.CONTEXT_V3 })
+
+    .addContext({ [x25519Ctx.constants.CONTEXT_URL]: x25519Ctx.contexts.get(x25519Ctx.constants.CONTEXT_URL) });
   return customLoaderProto;
 }
 
