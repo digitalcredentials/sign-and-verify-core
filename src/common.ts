@@ -1,7 +1,6 @@
-
 import { contexts as ldContexts, documentLoaderFactory } from '@transmute/jsonld-document-loader';
 import { CONTEXT_URL_V1, CONTEXT_V1 } from '@digitalcredentials/dcc-context';
-import { DIDDocument } from "./types";
+import { DIDDocument } from './types';
 import { Ed25519VerificationKey2020 } from '@digitalcredentials/ed25519-verification-key-2020';
 
 const didContext = require('@digitalcredentials/did-context');
@@ -30,7 +29,6 @@ export function getCustomLoader() : any {
 
 export function addDidDocuments(customLoaderProto: any, preloadedDidDocuments: DIDDocument[]) : any {
   preloadedDidDocuments.forEach((didDoc) => {
-
     customLoaderProto.addResolver({
       [didDoc.id]: {
         resolve: async (_did: string) => {
@@ -38,7 +36,6 @@ export function addDidDocuments(customLoaderProto: any, preloadedDidDocuments: D
         },
       },
     });
-
   });
   return customLoaderProto;
 }
@@ -52,4 +49,3 @@ export function getPreloadedAssertionMethods(preloadedDidDocuments: DIDDocument[
   });
   return preloadedAssertionMethods;
 }
-
