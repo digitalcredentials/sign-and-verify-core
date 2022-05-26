@@ -8,6 +8,7 @@ import { CryptoLD } from 'crypto-ld';
 import * as vc from '@digitalcredentials/vc';
 import * as didWeb from '@interop/did-web-resolver';
 import * as didKey from '@digitalcredentials/did-method-key';
+const { checkStatus } = require('@digitalbazaar/vc-status-list');
 
 interface VerifyCredentialParameters {
   verifiableCredential: any;
@@ -100,6 +101,7 @@ export const createVerifier = (preloadedDidDocuments: DIDDocument[]) => {
       const result = await vc.verifyCredential({
         credential: verifiableCredential,
         documentLoader: customLoader,
+        checkStatus,
         suite
       });
       const verified = result.verified;
@@ -123,7 +125,8 @@ export const createVerifier = (preloadedDidDocuments: DIDDocument[]) => {
     const toVerify: any = {
       presentation: { ...verifiablePresentation },
       documentLoader: customLoader,
-      suite: suite
+      checkStatus,
+      suite
     };
     if (options && options!.challenge) {
       toVerify['challenge'] = options!.challenge;
