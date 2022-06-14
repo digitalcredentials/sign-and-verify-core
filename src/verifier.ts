@@ -86,8 +86,13 @@ export const createVerifier = (preloadedDidDocuments: DIDDocument[]) => {
       };
     }
 
+    // Check if URL is already accounted for in document loader
+    const hasCustomResolver = Object.keys(customLoaderProto.resolvers).some((key) => {
+      return url.startsWith(key);
+    });
+
     // This generic http resolver is necessary for resolving status list credentials
-    if (!customLoaderProto.contexts.get(url)) {
+    if (!customLoaderProto.contexts[url] && !hasCustomResolver) {
       const { data } = await axios.get(url);
       return {
         documentUrl: url,
