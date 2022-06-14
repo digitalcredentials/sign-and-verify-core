@@ -66,19 +66,6 @@ export const createVerifier = (preloadedDidDocuments: DIDDocument[]) => {
         resolve: async (_did: string) => {
           return didKeyDriver.get({ did: _did });
         }
-      },
-      // These generic http/https resolvers are necessary for resolving status list credentials
-      ['http:']: {
-        resolve: async (url: string) => {
-          const { data } = await axios.get(url);
-          return data;
-        }
-      },
-      ['https:']: {
-        resolve: async (url: string) => {
-          const { data } = await axios.get(url);
-          return data;
-        }
       }
     });
 
@@ -96,6 +83,15 @@ export const createVerifier = (preloadedDidDocuments: DIDDocument[]) => {
       return {
         documentUrl: url,
         document
+      };
+    }
+
+    // This generic http resolver is necessary for resolving status list credentials
+    if (!customLoaderProto.contexts.get(url)) {
+      const { data } = await axios.get(url);
+      return {
+        documentUrl: url,
+        document: data
       };
     }
 
