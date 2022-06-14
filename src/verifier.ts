@@ -5,6 +5,7 @@ import { Ed25519Signature2020 } from '@digitalcredentials/ed25519-signature-2020
 import { Ed25519VerificationKey2020 } from '@digitalcredentials/ed25519-verification-key-2020';
 import { X25519KeyAgreementKey2020 } from '@digitalcredentials/x25519-key-agreement-key-2020';
 import { CryptoLD } from 'crypto-ld';
+import axios from "axios";
 import * as vc from '@digitalcredentials/vc';
 import * as didWeb from '@interop/did-web-resolver';
 import * as didKey from '@digitalcredentials/did-method-key';
@@ -59,13 +60,26 @@ export const createVerifier = (preloadedDidDocuments: DIDDocument[]) => {
       ['did:web:']: {
         resolve: async (_did: string) => {
           return didWebDriver.get({ did: _did });
-        },
+        }
       },
       ['did:key:']: {
         resolve: async (_did: string) => {
           return didKeyDriver.get({ did: _did });
-        },
+        }
       },
+      // These generic http/https resolvers are necessary for resolving status list credentials
+      ['http:']: {
+        resolve: async (url: string) => {
+          const { data } = await axios.get(url);
+          return data;
+        }
+      },
+      ['https:']: {
+        resolve: async (url: string) => {
+          const { data } = await axios.get(url);
+          return data;
+        }
+      }
     });
 
   let transmuteLoader = customLoaderProto.buildDocumentLoader();
