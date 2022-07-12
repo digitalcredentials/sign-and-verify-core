@@ -9,7 +9,7 @@ import axios from "axios";
 import * as vc from '@digitalcredentials/vc';
 import * as didWeb from '@interop/did-web-resolver';
 import * as didKey from '@digitalcredentials/did-method-key';
-const { checkStatus } = require('@digitalbazaar/vc-status-list');
+import { checkStatus } from '@digitalbazaar/vc-status-list';
 
 interface VerifyCredentialParameters {
   verifiableCredential: any;
