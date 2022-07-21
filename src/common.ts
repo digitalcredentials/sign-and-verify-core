@@ -4,9 +4,9 @@ import { DIDDocument } from './types';
 import { Ed25519VerificationKey2020 } from '@digitalcredentials/ed25519-verification-key-2020';
 import obCtx from '@digitalcredentials/open-badges-context';
 
-const didContext = require('@digitalcredentials/did-context');
-const ed25519 = require('ed25519-signature-2020-context');
-const x25519Ctx = require('x25519-key-agreement-2020-context');
+import didContext from '@digitalcredentials/did-context';
+import ed25519 from 'ed25519-signature-2020-context';
+import x25519Ctx from '@digitalcredentials/x25519-key-agreement-2020-context';
 
 export function getController(fullDid: string) {
   return fullDid.split('#')[0];

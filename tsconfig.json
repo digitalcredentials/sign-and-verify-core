@@ -18,8 +18,6 @@
     "resolveJsonModule": true,
     "declaration": true,                       /* emit type declaration files */
     "rootDir": "./src"
-    
   },
   "include": ["src/**/*"]
-  
 }
