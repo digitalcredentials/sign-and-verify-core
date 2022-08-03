@@ -1,5 +1,9 @@
 # `@digitalcredentials/sign-and-verify-core` Changelog
 
+## v2.2.0 - 2022-08-03
+### Added
+- Add support for credential status management.
+
 ## v2.1.0 - 2022-05-25
 ### Added
 - Add support for Open Badges v3 credential context.
