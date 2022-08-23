@@ -1,6 +1,6 @@
 {
   "name": "@digitalcredentials/sign-and-verify-core",
-  "version": "2.2.0",
+  "version": "2.1.0",
   "description": "DCC's VC signing and verification libraries",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
