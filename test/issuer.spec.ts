@@ -2,8 +2,8 @@ import { readFileSync } from 'fs';
 import { expect } from 'chai';
 import 'mocha';
 
-import { createIssuer } from './issuer';
-import { getProofProperty } from './signatures';
+import { createIssuer } from '../src/issuer';
+import { getProofProperty } from '../src/signatures';
 
 const controller = 'did:key:z6MkqanD5cmEVf154z5xExoxNKENAzVr3gdPo4wD2R2aCUzj';
 const keyId = 'did:key:z6MkqanD5cmEVf154z5xExoxNKENAzVr3gdPo4wD2R2aCUzj#z6MkqanD5cmEVf154z5xExoxNKENAzVr3gdPo4wD2R2aCUzj';

@@ -83,7 +83,7 @@ NOTE:  IMPORTANT!  IMPORTANT! This DID Document contains the private key and so 
 
 ## Examples
 
-You can see a lot of this in [tests](src/issuer.spec.ts) - we just reproduce/re-organize it here to make it easier to understand if you are new to javascript, or to testing, or really just want to see the important parts without distractions. 
+You can see a lot of this in [tests](test/issuer.spec.ts) - we just reproduce/re-organize it here to make it easier to understand if you are new to javascript, or to testing, or really just want to see the important parts without distractions. 
 
 NOTE:  where we say 'presentation', we mean a [Verifiable Presentation](https://www.w3.org/TR/vc-data-model/#presentations)
 

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import 'mocha';
 
-import { getController } from './common';
+import { getController } from '../src/common';
 
 const fragment = 'z6MkhVTX9BF3NGYX6cc7jWpbNnR7cAjH8LUffabZP8Qu4ysC'
 const controller = `did:key:${fragment}`;
