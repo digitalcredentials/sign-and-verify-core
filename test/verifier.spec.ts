@@ -2,9 +2,9 @@ import { readFileSync } from 'fs';
 import { expect } from 'chai';
 import { createSandbox } from 'sinon';
 import 'mocha';
-import * as Verifier from './verifier';
+import * as Verifier from '../src/verifier';
 
-import { createVerifier } from './verifier';
+import { createVerifier } from '../src/verifier';
 
 const sandbox = createSandbox();
 

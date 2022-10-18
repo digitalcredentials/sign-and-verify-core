@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import 'mocha';
 
-import { SignatureOptions, getSigningDate, getSigningKeyIdentifier, DefaultProofPurpose } from "./signatures";
+import { SignatureOptions, getSigningDate, getSigningKeyIdentifier, DefaultProofPurpose } from "../src/signatures";
 
 describe("signatures", () => {
 
@@ -36,5 +36,3 @@ describe("signatures", () => {
     expect(signingDate).to.equal(created);
   });
 });
-
-
