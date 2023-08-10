@@ -4,11 +4,10 @@ import { SignatureOptions, getSigningKeyIdentifier, getSigningDate } from './sig
 import { Ed25519VerificationKey2020 } from '@digitalcredentials/ed25519-verification-key-2020';
 import { Ed25519Signature2020 } from '@digitalcredentials/ed25519-signature-2020';
 import vc from '@digitalcredentials/vc';
+import { securityLoader } from '@digitalcredentials/security-document-loader';
 
 export function createIssuer(unlockedDIDDocuments: DIDDocument[], defaultSigningIdentifier?: string) {
-  let customLoaderProto = getCustomLoader();
-  customLoaderProto = addDidDocuments(customLoaderProto, unlockedDIDDocuments);
-  let customLoader = customLoaderProto.buildDocumentLoader();
+  const customLoader = securityLoader({ fetchRemoteContexts: true }).build();
 
   const unlockedAssertionMethods: Map<string, Ed25519VerificationKey2020> = getPreloadedAssertionMethods(unlockedDIDDocuments);
 
